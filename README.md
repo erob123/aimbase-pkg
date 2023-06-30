@@ -3,8 +3,8 @@
 
 2. Create and activate a new conda environment, e.g., `transformers-api` with python 3.11.
 ```bash
-conda create --name transformers-api python==3.11
-conda activate transformers-api
+conda create --name aimbase-pkg python==3.11
+conda activate aimbase-pkg
 ```
 
 3. Run `which pip` and `which python` to verify path to make sure that your `python` and `pip` binaries are coming from your `conda` virtual environment.  Note that the order in which you install conda vs. pip matters to set virtual env priorities.

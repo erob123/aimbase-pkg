@@ -3,12 +3,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_versioning import VersionedFastAPI
-from .core.config import settings, OriginationEnum
+from .core.config import settings
 from .core.logging import logger, LogConfig
 from logging.config import dictConfig
 from .aimodels.router import router as aimodels_router
-from .sentiments.router import router as sentiments_router
-from .topics.router import router as topics_router
 from .dependencies import httpx_client
 
 dictConfig(LogConfig().dict())
@@ -32,25 +30,9 @@ origins = [
     "http://localhost:3000",
     "http://localhost:3001",
     "http://localhost:3004",
-    "https://transformers.staging.dso.mil",
-    "https://transformers.apps.dso.mil",
 ]
 
-# set originated_from for standard app usage
-@app.get('/originated_from_app/')
-async def originated_from_app():
-    settings.originated_from = OriginationEnum.ORIGINATED_FROM_APP
-    return settings.originated_from
-
-# use test to allow for cleanup of database entries
-@app.get('/originated_from_test/')
-async def originated_from_test():
-    settings.originated_from = OriginationEnum.ORIGINATED_FROM_TEST
-    return settings.originated_from
-
 app.include_router(aimodels_router)
-app.include_router(sentiments_router)
-app.include_router(topics_router)
 
 # setup for major versioning
 # ensure to copy over all the non-title args to the original FastAPI call...read docs here: https://pypi.org/project/fastapi-versioning/

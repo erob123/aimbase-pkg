@@ -1,6 +1,5 @@
 import re
 from typing import Optional
-from app.core.config import OriginationEnum
 
 from pydantic import BaseModel, UUID4, validator
 from ..models.bertopic_embedding_pretrained import EmbeddingModelTypeEnum
@@ -43,7 +42,6 @@ class BertopicEmbeddingPretrainedInDBBase(BertopicEmbeddingPretrainedBase):
     uploaded: bool = False
     version: int
     sha256: str
-    originated_from: OriginationEnum
 
     class Config:
         orm_mode = True

@@ -1,6 +1,5 @@
 import re
 from typing import Optional
-from app.core.config import OriginationEnum
 
 from pydantic import BaseModel, UUID4, validator
 from ..models.gpt4all_pretrained import Gpt4AllModelFilenameEnum
@@ -43,7 +42,6 @@ class Gpt4AllPretrainedInDBBase(Gpt4AllPretrainedBase):
     version: int
     sha256: str
     use_base_model: bool
-    originated_from: OriginationEnum
 
     class Config:
         orm_mode = True

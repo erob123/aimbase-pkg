@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, Column, ForeignKey, UUID, JSON, Enum
 from sqlalchemy.orm import relationship
 from app.db.base_class import Base
-from app.core.config import OriginationEnum, get_originated_from
 import uuid
 
 if TYPE_CHECKING:
@@ -15,6 +14,5 @@ class BertopicTrainedModel(Base):
     uploaded = Column(Boolean(), default=False)
     plotly_bubble_config = Column(JSON)
     embedding_pretrained_id = Column(UUID, ForeignKey("bertopicembeddingpretrainedmodel.id"))
-    originated_from = Column(Enum(OriginationEnum), default=get_originated_from)
     embedding_pretrained = relationship("BertopicEmbeddingPretrainedModel", back_populates="trained_models")
     trained_on_documents = relationship("DocumentModel", secondary="documentbertopictrainedmodel", back_populates="used_in_trained_models")
