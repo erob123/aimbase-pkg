@@ -34,7 +34,7 @@ def gen_column_attrs(
     * (field_name, (field_type, ...)) where field name is the name of the
     field (string) for this column, and field_type is the class
     of the type as it would be expected to be used in a
-    pydantic schema
+    pydantic schema.  "..." indicates no default in the schema.
     """
     mapper = inspect(ModelType)
 
@@ -93,13 +93,14 @@ def dict_optional_column_attrs_no_id(
 
     **Returns**
 
-    dict generated from gen_column_attrs
+    dict generated from gen_column_attrs with "None" as the
+    default value for pydantic schemas
     """
 
     output = {}
     for field_name, (field_type, _) in gen_column_attrs(ModelType):
         if field_name != "id":
-            output[field_name] = (field_type | None, ...)
+            output[field_name] = (field_type | None, None)
 
     return output
 

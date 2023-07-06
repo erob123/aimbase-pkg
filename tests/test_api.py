@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
-from instarest.apps.base import versioned_app
+from .example_app import auto_app
 
-client = TestClient(versioned_app)
+client = TestClient(auto_app)
 
 # Verify app versioning set to /v1
 def test_v1_exists():

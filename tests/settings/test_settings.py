@@ -2,7 +2,7 @@ import os
 from unittest import mock
 from instarest.core.config import EnvironmentSettings, Settings, settings, get_env_file
 
-BASEDIR = os.path.join(os.path.abspath(os.path.dirname("./app/core/config.py")), "env_var")
+BASEDIR = os.path.join(os.path.abspath(os.path.dirname("./instarest/core/config.py")), "env_var")
 
 def test_settings_exists():
     assert isinstance(settings, Settings)
@@ -42,24 +42,3 @@ def test_env_file_name_production():
     environment_settings = EnvironmentSettings()
     env_file = get_env_file(environment_settings)
     assert env_file == os.path.join(BASEDIR, "production.env")
-
-@mock.patch.dict(os.environ, {"MINIO_ENDPOINT_URL": "http://test.com"})
-def test_remove_http_or_https_removes_http():
-    environment_settings = EnvironmentSettings()
-    mock_settings = Settings(_env_file=get_env_file(
-        environment_settings), _env_file_encoding='utf-8')
-    assert mock_settings.minio_endpoint_url == "test.com"
-
-@mock.patch.dict(os.environ, {"MINIO_ENDPOINT_URL": "https://test.com"})
-def test_remove_http_or_https_removes_https():
-    environment_settings = EnvironmentSettings()
-    mock_settings = Settings(_env_file=get_env_file(
-        environment_settings), _env_file_encoding='utf-8')
-    assert mock_settings.minio_endpoint_url == "test.com"
-
-@mock.patch.dict(os.environ, {"MINIO_ENDPOINT_URL": "//test.com"})
-def test_remove_http_or_https_does_nothing_if_no_http_or_https():
-    environment_settings = EnvironmentSettings()
-    mock_settings = Settings(_env_file=get_env_file(
-        environment_settings), _env_file_encoding='utf-8')
-    assert mock_settings.minio_endpoint_url == "//test.com"

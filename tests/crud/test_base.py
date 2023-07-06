@@ -7,7 +7,7 @@ EmptyTestCreate = crud_schemas.EntityCreate
 EmptyTestUpdate = crud_schemas.EntityUpdate
 
 def test_create_obj(db: Session) -> None:
-    obj_in = EmptyTestCreate()
+    obj_in = crud_schemas.EntityCreate()
     obj = crud_test.create(db=db, obj_in=obj_in)
     assert obj.bool_field is False
     assert obj.title == "title"

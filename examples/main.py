@@ -42,4 +42,4 @@ sentence_router = RouterBase(
 app_base = AppBase(crud_routers=[sentence_router], app_name="Demo App API")
 
 # automagic and version app
-happy = app_base.get_autowired_app()
+auto_app = app_base.get_autowired_app()
