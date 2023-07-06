@@ -1,7 +1,7 @@
 import os
 from fastapi.testclient import TestClient
-from app.main import app
-from app.aimodels.lstm_stress_classifier.ai_service.inference.inference_model import BASE_CKPT_DIR
+from instarest.apps.base import app
+from instarest.aimodels.lstm_stress_classifier.ai_service.inference.inference_model import BASE_CKPT_DIR
 
 #***********Module Test Vars***********
 test_file_dir = "./tests/test_files/"

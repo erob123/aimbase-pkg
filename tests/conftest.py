@@ -3,7 +3,7 @@ import random
 from .test_files.db.db_test_session import SessionLocal
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+from instarest.apps.base import app
 
 
 # in case you are wondering why we use yield instead of return, check this

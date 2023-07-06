@@ -1,38 +1,21 @@
 [tool.poetry]
-name = "c3po-model-server"
-version = "0.1.0"
-description = "An AI service for language-based models"
-authors = ["Eric Robinson","Emilie Cowen","Mark Howard","Pat Kelly"]
+name = "instarest"
+version = "0.0.1"
+description = "Declarative, instant REST APIs based on FastAPI, Pydantic, SQLAlchemy, and PostgreSQL"
+authors = ["Eric Robinson"]
 readme = "README.md"
-packages = [{include = "app"}]
+packages = [{include = "instarest"}]
 
 [tool.poetry.dependencies]
 python = "~3.11"
-urllib3 = "^1.26.16"
 fastapi = "^0.95.2"
 uvicorn = "^0.22.0"
 pydantic = "^1.10.8"
-matplotlib = "^3.7.1"
-pandas = "^2.0.1"
 httpx = "^0.24.1"
-aiofiles = "^23.1.0"
-clamd = "^1.0.2"
 python-dotenv = "^1.0.0"
 fastapi-versioning = "^0.10.0"
 sqlalchemy = "^2.0.15"
 psycopg2-binary = "^2.9.6"
-hdbscan = "^0.8.29"
-python-multipart = "^0.0.6"
-minio = "^7.1.15"
-bertopic = "^0.14.1"
-transformers = "^4.30.2"
-tensorflow = {version = "2.12.0", markers = "platform.machine == 'x86_64'"}
-tensorflow-macos = {version = "2.12.0", platform = "darwin", markers = "platform.machine == 'arm64'"}
-tensorflow-metal = {version = "1.0.1", platform = "darwin", markers = "platform.machine == 'arm64'"}
-snorkel = "^0.9.9"
-gpt4all = "^0.2.3"
-langchain = "^0.0.188"
-torch = "2.0.0"
 
 [tool.poetry.group.test.dependencies]
 pylint = "^2.17.4"
@@ -40,65 +23,23 @@ pytest = "^7.3.1"
 pytest-cov = "^4.1.0"
 pytest-asyncio = "^0.21.0"
 pytest-mock = "^3.10.0"
-black = "^23.3.0"
 isort = "^5.12.0"
+urllib3 = "^1.26.16"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.2"
-fastapi-code-generator = "^0.4.2"
 pipdeptree = "^2.7.1"
+pruner = "^0.0.6"
 
 [tool.coverage.run]
-source = ["app"]
+source = ["instarest"]
 omit = ["__init__.py", "initial_data.py", "init_db.py"]
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-
-
 [[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
-
-[packages]
-fastapi = "*"
-uvicorn = "*"
-pydantic = "*"
-transformers = "*"
-matplotlib = "*"
-pandas = "*"
-pre-commit = "*"
-pylint = "*"
-pytest = "*"
-httpx = "*"
-pytest-cov = "*"
-python-multipart = "*"
-aiofiles = "*"
-clamd = "*"
-python-dotenv = "*"
-fastapi-versioning = "*"
-sqlalchemy = "*"
-psycopg2-binary = "*"
-hdbscan = "*"
-bertopic = "*"
-minio = "*"
-pytest-asyncio = "*"
-pytest-mock = "*"
-
-[dev-packages]
-black = "==19.10b0"
-isort = "*"
-flake8 = "*"
-ipykernel = "*"
-autopep8 = "*"
-fastapi-code-generator = "*"
-pipdeptree = "*"
-
-[requires]
-python_version = "3.9"
-
-[pipenv]
-allow_prereleases = true

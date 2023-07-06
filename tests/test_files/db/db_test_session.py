@@ -1,4 +1,4 @@
-from app.core.config import settings
+from instarest.core.config import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from .db_test_base import Base  # noqa: F401

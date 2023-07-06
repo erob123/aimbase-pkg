@@ -3,10 +3,10 @@ import os
 from unittest.mock import MagicMock
 import uuid
 from fastapi.testclient import TestClient
-from app.aimodels.gpt4all.schemas.gpt4all_pretrained import Gpt4AllPretrainedCreate
+from instarest.aimodels.gpt4all.schemas.gpt4all_pretrained import Gpt4AllPretrainedCreate
 
-from app.main import app
-from app.aimodels.gpt4all.routers.pretrained import get_db, get_minio, upload_file_to_minio
+from instarest.apps.base import app
+from instarest.aimodels.gpt4all.routers.pretrained import get_db, get_minio, upload_file_to_minio
 from tests.test_files.db.db_test_session import SessionLocal
 
 from fastapi.encoders import jsonable_encoder

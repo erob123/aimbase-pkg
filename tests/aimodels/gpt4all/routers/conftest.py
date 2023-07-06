@@ -1,11 +1,11 @@
 from typing import Optional, Callable
 from sqlalchemy.orm import Session
-from app.aimodels.gpt4all import crud
-from app.aimodels.gpt4all.ai_services.completion_inference import CompletionInferenceInputs, CompletionInferenceOutputChoices, CompletionInferenceOutputs, FinishReasonEnum
+from instarest.aimodels.gpt4all import crud
+from instarest.aimodels.gpt4all.ai_services.completion_inference import CompletionInferenceInputs, CompletionInferenceOutputChoices, CompletionInferenceOutputs, FinishReasonEnum
 
-from app.aimodels.gpt4all.models.gpt4all_pretrained import Gpt4AllModelFilenameEnum, Gpt4AllPretrainedModel
-from app.aimodels.gpt4all.schemas.gpt4all_pretrained import Gpt4AllPretrainedCreate
-from app.core.config import settings
+from instarest.aimodels.gpt4all.models.gpt4all_pretrained import Gpt4AllModelFilenameEnum, Gpt4AllPretrainedModel
+from instarest.aimodels.gpt4all.schemas.gpt4all_pretrained import Gpt4AllPretrainedCreate
+from instarest.core.config import settings
 
 import pytest
 

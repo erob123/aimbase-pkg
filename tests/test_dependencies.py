@@ -1,5 +1,5 @@
-from app.dependencies import get_lstm_stress_classifier_model
-from app.aimodels.lstm_stress_classifier.ai_service.inference.inference_model import LstmStressClassifierModel
+from instarest.dependencies import get_lstm_stress_classifier_model
+from instarest.aimodels.lstm_stress_classifier.ai_service.inference.inference_model import LstmStressClassifierModel
 
 
 # ensure get_lstm_stress_classifier_model returns a model

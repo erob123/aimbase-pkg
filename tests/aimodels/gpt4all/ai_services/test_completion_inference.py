@@ -1,7 +1,7 @@
 
 from unittest.mock import patch, create_autospec
-from app.aimodels.gpt4all.ai_services.completion_inference import CompletionInference, CompletionInferenceInputs
-from app.aimodels.gpt4all.models.gpt4all_pretrained import Gpt4AllPretrainedModel
+from instarest.aimodels.gpt4all.ai_services.completion_inference import CompletionInference, CompletionInferenceInputs
+from instarest.aimodels.gpt4all.models.gpt4all_pretrained import Gpt4AllPretrainedModel
 from minio import Minio
 from pydantic import ValidationError
 

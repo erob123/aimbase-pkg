@@ -1,4 +1,4 @@
-from app.aimodels.lstm_stress_classifier.ai_service.inference.inference_model import LstmStressClassifierModel
+from instarest.aimodels.lstm_stress_classifier.ai_service.inference.inference_model import LstmStressClassifierModel
 
 #************Mocks*******************
 # None

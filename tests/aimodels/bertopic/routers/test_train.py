@@ -2,11 +2,11 @@ import os
 from unittest.mock import MagicMock
 import uuid
 from fastapi.testclient import TestClient
-from app.aimodels.bertopic.models.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedModel, EmbeddingModelTypeEnum
-from app.aimodels.bertopic.models.document import DocumentModel
+from instarest.aimodels.bertopic.models.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedModel, EmbeddingModelTypeEnum
+from instarest.aimodels.bertopic.models.document import DocumentModel
 
-from app.main import app
-from app.aimodels.bertopic.routers.train import get_db, get_minio
+from instarest.apps.base import app
+from instarest.aimodels.bertopic.routers.train import get_db, get_minio
 from tests.test_files.db.db_test_session import SessionLocal
 
 from fastapi.encoders import jsonable_encoder

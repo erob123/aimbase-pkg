@@ -1,9 +1,9 @@
 
 
 from sqlalchemy.orm import Session
-from app.aimodels.bertopic.models.document import DocumentModel
-from app.aimodels.bertopic.models.document_embedding_computation import DocumentEmbeddingComputationModel
-from app.aimodels.bertopic.models.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedModel
+from instarest.aimodels.bertopic.models.document import DocumentModel
+from instarest.aimodels.bertopic.models.document_embedding_computation import DocumentEmbeddingComputationModel
+from instarest.aimodels.bertopic.models.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedModel
 
 
 def test_instantiation(db: Session, obj_ids: dict):

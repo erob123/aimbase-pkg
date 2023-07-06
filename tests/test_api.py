@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from app.main import versioned_app
+from instarest.apps.base import versioned_app
 
 client = TestClient(versioned_app)
 

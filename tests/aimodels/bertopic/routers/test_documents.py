@@ -1,9 +1,9 @@
 
 from fastapi.testclient import TestClient
-from app.aimodels.bertopic.schemas.document import DocumentCreate
+from instarest.aimodels.bertopic.schemas.document import DocumentCreate
 
-from app.main import app
-from app.aimodels.bertopic.routers.documents import get_db
+from instarest.apps.base import app
+from instarest.aimodels.bertopic.routers.documents import get_db
 from tests.test_files.db.db_test_session import SessionLocal
 
 from fastapi.encoders import jsonable_encoder

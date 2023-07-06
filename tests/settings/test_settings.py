@@ -1,6 +1,6 @@
 import os
 from unittest import mock
-from app.core.config import EnvironmentSettings, Settings, settings, get_env_file
+from instarest.core.config import EnvironmentSettings, Settings, settings, get_env_file
 
 BASEDIR = os.path.join(os.path.abspath(os.path.dirname("./app/core/config.py")), "env_var")
 

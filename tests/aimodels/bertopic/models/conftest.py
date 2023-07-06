@@ -1,9 +1,9 @@
 import uuid
 from sqlalchemy.orm import Session
-from app.aimodels.bertopic.models.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedModel
-from app.aimodels.bertopic.models.document import DocumentModel
-from app.aimodels.bertopic.models.document_embedding_computation import DocumentEmbeddingComputationModel
-from app.aimodels.bertopic.models.bertopic_trained import BertopicTrainedModel
+from instarest.aimodels.bertopic.models.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedModel
+from instarest.aimodels.bertopic.models.document import DocumentModel
+from instarest.aimodels.bertopic.models.document_embedding_computation import DocumentEmbeddingComputationModel
+from instarest.aimodels.bertopic.models.bertopic_trained import BertopicTrainedModel
 from collections.abc import Generator
 import pytest
 

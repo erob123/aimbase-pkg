@@ -8,11 +8,11 @@ import string
 import random
 import pandas as pd
 from fastapi.testclient import TestClient
-from app.aimodels.bertopic.schemas.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedCreate
-from app.aimodels.bertopic.ai_services.weak_learning import WeakLearner
+from instarest.aimodels.bertopic.schemas.bertopic_embedding_pretrained import BertopicEmbeddingPretrainedCreate
+from instarest.aimodels.bertopic.ai_services.weak_learning import WeakLearner
 
-from app.main import app
-from app.aimodels.bertopic.routers.bertopic_embedding_pretrained import get_db, get_minio, upload_file_to_minio
+from instarest.apps.base import app
+from instarest.aimodels.bertopic.routers.bertopic_embedding_pretrained import get_db, get_minio, upload_file_to_minio
 from tests.test_files.db.db_test_session import SessionLocal
 
 from fastapi.encoders import jsonable_encoder
