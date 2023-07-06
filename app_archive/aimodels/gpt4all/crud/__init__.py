@@ -1,1 +1,0 @@
-from .crud_gpt4all_pretrained import gpt4all_pretrained
