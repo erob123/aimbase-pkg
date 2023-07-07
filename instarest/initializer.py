@@ -11,6 +11,12 @@ class Initializer:
     def __init__(self, Base: DeclarativeBase):
         self.Base = Base
 
+    def init_db(self):
+        init_db(self.Base)
+
+    def wipe_db(self):
+        wipe_db(self.Base)
+
     def execute(self, migration_toggle = False) -> None:
 
         # environment can be one of 'local', 'test', 'staging', 'production'
@@ -22,7 +28,7 @@ class Initializer:
         # clear DB if local or staging as long as not actively testing migrating
         if (environment in ['local', 'staging'] and migration_toggle is False):
             logger.info("Clearing database")
-            wipe_db(self.Base)
+            self.wipe_db()
             logger.info("Database cleared")
 
         # all environments need to initialize the database
@@ -30,7 +36,7 @@ class Initializer:
         if (environment in ['local', 'development', 'test', 'staging'] or (environment == 'production' and migration_toggle is True)):
             logger.info("Creating database schema and tables")
             db = SessionLocal()
-            init_db(self.Base)
+            self.init_db()
             logger.info("Initial database schema and tables created.")
         else:
             logger.info("Skipping database initialization")

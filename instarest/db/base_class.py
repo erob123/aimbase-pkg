@@ -2,7 +2,8 @@ from sqlalchemy import (
     Column,
     UUID
 )
-from sqlalchemy.ext.declarative import as_declarative, declared_attr
+
+from sqlalchemy.orm import as_declarative, declared_attr
 from uuid import uuid4
 
 @as_declarative()
