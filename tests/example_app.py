@@ -30,7 +30,7 @@ crud_schemas = SchemaBase(EmptyTestModel)
 crud_test = CRUDBase(EmptyTestModel)
 
 # build crud router automagically
-sentence_router = RouterBase(
+test_router = RouterBase(
     schema_base=crud_schemas,
     crud_base=crud_test,
     prefix="/test",
@@ -38,7 +38,7 @@ sentence_router = RouterBase(
 )
 
 # setup base up from routers
-app_base = AppBase(crud_routers=[sentence_router], app_name="Test App API")
+app_base = AppBase(crud_routers=[test_router], app_name="Test App API")
 
 # automagic and version app
 auto_app = app_base.get_autowired_app()

@@ -9,6 +9,7 @@ from typing import Generic, TypeVar
 SchemaBaseType = TypeVar("SchemaBaseType", bound=SchemaBase)
 CRUDBaseType = TypeVar("CRUDBaseType", bound=CRUDBase)
 
+
 class RouterBase(Generic[SchemaBaseType]):
     class ErrorMessage(BaseModel):
         detail: str = ""
@@ -43,7 +44,9 @@ class RouterBase(Generic[SchemaBaseType]):
         self.schema_base = schema_base
         self.crud_base = crud_base
         self.allow_delete = allow_delete
-        self.router = APIRouter(prefix=prefix, tags=[self.schema_base.get_schema_prefix()])
+        self.router = APIRouter(
+            prefix=prefix, tags=[self.schema_base.get_schema_prefix()]
+        )
         self._define_single_item_crud()
 
     def get_router(self):
@@ -51,6 +54,13 @@ class RouterBase(Generic[SchemaBaseType]):
 
     # Single-Item CRUD Endpoints
     def _define_single_item_crud(self):
+
+        def build_id_not_found_error(id):
+            return HTTPException(
+                status_code=400,
+                detail=f"{self.schema_base.Entity.__name__} with id: {id} not found",
+            )
+
         # CREATE
         @self.router.post(
             "/",
@@ -79,6 +89,10 @@ class RouterBase(Generic[SchemaBaseType]):
             id: UUID4, db: Session = Depends(get_db)
         ) -> self.schema_base.Entity:
             entity_obj: self.schema_base.get_model_type() = self.crud_base.get(db, id)
+
+            if entity_obj is None:
+                raise build_id_not_found_error(id)
+
             return entity_obj
 
         # UPDATE
@@ -97,10 +111,7 @@ class RouterBase(Generic[SchemaBaseType]):
             # check to make sure id exists
             entity_obj: self.schema_base.get_model_type() = self.crud_base.get(db, id)
             if not entity_obj:
-                raise HTTPException(
-                    status_code=422,
-                    detail=f"{self.schema_base.Entity.__name__} with id: {id} not found",
-                )
+                raise build_id_not_found_error(id)
 
             # update the entity and return
             updated_entity_obj: self.schema_base.get_model_type() = (
@@ -119,7 +130,11 @@ class RouterBase(Generic[SchemaBaseType]):
                 response_description=f"Empty JSON object if successfully deleted",
             )
             async def delete_entity(id: UUID4, db: Session = Depends(get_db)) -> dict:
-                self.crud_base.remove(db, id=id)
+                
+                deleted_obj = self.crud_base.remove(db, id=id)
+                if not deleted_obj:
+                    raise build_id_not_found_error(id)
+                
                 return {}
 
 
