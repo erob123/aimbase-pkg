@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "gptbase"
+version = "0.0.1"
+description = "Declarative, instant REST APIs based on FastAPI, Pydantic, SQLAlchemy, and PostgreSQL"
+authors = ["Eric Robinson"]
+readme = "README.md"
+packages = [{include = "gptbase"}]
+
+[tool.poetry.dependencies]
+python = "~3.11"
+transformers = "^4.30.2"
+torch = "^2.0.1"
+
+[tool.poetry.group.test.dependencies]
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.3.2"
+pipdeptree = "^2.7.1"
+pruner = "^0.0.6"
+
+[tool.coverage.run]
+source = ["gptbase"]
+omit = ["__init__.py", "initial_data.py", "init_db.py"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
