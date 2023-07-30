@@ -1,6 +1,6 @@
 import os
 from typing import Any
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from aimbase.core.constants import MODEL_CACHE_BASEDIR
 from aimbase.crud.base import CRUDBaseAIModel
 from aimbase.db.base import BaseAIModel
@@ -12,11 +12,16 @@ from aimbase.core.minio import download_folder_from_minio
 # TODO: setup logger, minio dependency init, and env var loading / inheritance
 class BaseAIInferenceService(BaseModel):
 
+    # one of sha256 or model_name must be provided
     sha256: str | None = None
     model_name: str | None = None
-    db: Session | None = None
+
+    # db and crud objects must be provided
+    db: Session
+    crud: CRUDBaseAIModel
+
+    # optional objects, must be provided if minio is used
     s3: Minio | None = None
-    crud: CRUDBaseAIModel | None = None
     prioritize_internet_download: bool = True
 
     # internal objects, not to be used by external callers
@@ -26,6 +31,12 @@ class BaseAIInferenceService(BaseModel):
     # property for storing whether or not service object is initialized (DB plus local cache)
     initialized: bool = False
 
+    # pydantic validator to ensure that one of sha256 or model_name is provided
+    @validator("model_name", always=True)
+    def either_sha256_or_model_name(cls, v, values):
+        if v is None and values["sha256"] is None:
+            raise ValueError("Either 'sha256' or 'model_name' must be provided.")
+        return v
 
     def initialize(self):
         """
