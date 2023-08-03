@@ -4,8 +4,7 @@ from fastapi_versioning import VersionedFastAPI
 
 from instarest.routers.base import RouterBase
 from ..core.config import settings
-from ..core.logging import logger, LogConfig
-from logging.config import dictConfig
+from ..core.logging import LogConfig
 from ..dependencies import httpx_client
 
 class AppBase:
@@ -27,6 +26,7 @@ class AppBase:
             assert isinstance(router, RouterBase)
 
         # DO NOT REORDER
+        self.logger = LogConfig(self.__class__.__name__).build_logger()
         self.crud_routers = crud_routers
         self.app_name = app_name
         self.setup() # sets up self.core_app
@@ -57,14 +57,13 @@ class AppBase:
         """
         Wires up and returns a versioned FastAPI app with loggger, CORS, httpx initialized
         """
-        dictConfig(LogConfig().dict())
-        logger.info("Dummy Info")
-        logger.error("Dummy Error")
-        logger.debug("Dummy Debug")
-        logger.warning("Dummy Warning")
-        logger.info("UI Root: %s", settings.docs_ui_root_path)
-        logger.info("log_level: %s", settings.log_level)
-        logger.warning("Test filtering this_should_be_filtered_out")
+        self.logger.info("Dummy Info")
+        self.logger.error("Dummy Error")
+        self.logger.debug("Dummy Debug")
+        self.logger.warning("Dummy Warning")
+        self.logger.info("UI Root: %s", settings.docs_ui_root_path)
+        self.logger.info("log_level: %s", settings.log_level)
+        self.logger.warning("Test filtering this_should_be_filtered_out")
 
         origins = [
             "http://localhost",

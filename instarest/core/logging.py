@@ -7,7 +7,7 @@ from logging.config import dictConfig
 class LogConfig(BaseModel):
     """Logging configuration to be set for the server"""
 
-    LOGGER_NAME: str = "transformers"
+    LOGGER_NAME: str = "base_logger"
     LOG_FORMAT: str = "%(levelprefix)s | %(asctime)s | %(message)s"
     LOG_LEVEL: str = settings.log_level
 
@@ -29,8 +29,15 @@ class LogConfig(BaseModel):
         },
     }
     loggers = {
-        "transformers": {"handlers": ["default"], "level": LOG_LEVEL},
+        "base_logger": {"handlers": ["default"], "level": LOG_LEVEL},
     }
+
+    def build_logger(self) -> logging.Logger:
+        dictConfig(self.dict())
+        logger = logging.getLogger(self.LOGGER_NAME)
+        logger.addFilter(SuppressSpecificLogItemFilter(filter_string="this_should_be_filtered_out"))
+        return logger
+
 
 # Define a filter to exclude logs with a specific string
 class SuppressSpecificLogItemFilter(logging.Filter):
@@ -40,8 +47,3 @@ class SuppressSpecificLogItemFilter(logging.Filter):
 
     def filter(self, record):
         return self.filter_string not in record.getMessage()
-
-
-dictConfig(LogConfig().dict())
-logger = logging.getLogger("transformers")
-logger.addFilter(SuppressSpecificLogItemFilter(filter_string="this_should_be_filtered_out"))

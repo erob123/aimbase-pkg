@@ -5,7 +5,6 @@ from instarest import (
     SchemaBase,
     CRUDBase,
     config,
-    logging,
     Initializer,
 )
 

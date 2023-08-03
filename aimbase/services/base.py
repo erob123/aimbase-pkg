@@ -8,8 +8,10 @@ from minio import Minio
 from sqlalchemy.orm import Session
 from pathlib import Path
 from aimbase.core.minio import download_folder_from_minio
+from instarest import LogConfig
+from logging import Logger
 
-# TODO: setup logger, minio dependency init, and env var loading / inheritance
+# TODO: minio dependency init, and env var loading / inheritance
 class BaseAIInferenceService(BaseModel):
 
     # one of sha256 or model_name must be provided
@@ -27,16 +29,19 @@ class BaseAIInferenceService(BaseModel):
     # internal objects, not to be used by external callers
     db_object: BaseAIModel | None = None
     model: Any | None = None
-
-    # property for storing whether or not service object is initialized (DB plus local cache)
     initialized: bool = False
+    logger: Logger | None = None
 
     # pydantic validator to ensure that one of sha256 or model_name is provided
-    @validator("model_name", always=True)
+    @validator("model_name", pre=True, always=True)
     def either_sha256_or_model_name(cls, v, values):
         if v is None and values["sha256"] is None:
             raise ValueError("Either 'sha256' or 'model_name' must be provided.")
         return v
+
+    @validator("logger", pre=True, always=True)
+    def set_logger(cls, v):
+        return v or LogConfig(cls.__name__).build_logger()
 
     def initialize(self):
         """
@@ -118,9 +123,9 @@ class BaseAIInferenceService(BaseModel):
             raise ValueError("Minio client is not set.")
 
         # download the model folder from minio
-        logger.info(f"Downloading model from Minio to {model_cache_path}")
+        self.logger.info(f"Downloading model from Minio to {model_cache_path}")
         download_folder_from_minio(s3=self.s3, dir_name=model_cache_path)
-        logger.info(f"Downloaded model from Minio to {model_cache_path}")
+        self.logger.info(f"Downloaded model from Minio to {model_cache_path}")
 
     
     def load_model_from_cache(self, model_cache_path: str):

@@ -1,3 +1,4 @@
+import os
 from instarest import (
     AppBase,
     DeclarativeBase,
@@ -5,11 +6,17 @@ from instarest import (
     SchemaBase,
     CRUDBase,
     config,
-    logging,
     Initializer,
 )
 
 from sqlalchemy import Column, String, Boolean
+
+# tell the app where to find the environment variables
+ENV_VAR_FOLDER = os.path.join(os.path.abspath(
+        os.path.dirname(__file__)), "env_vars")
+
+environment_settings = config.EnvironmentSettings(environment="local", env_var_folder=ENV_VAR_FOLDER)
+config.set_core_settings(environment_settings)
 
 class EmptyTestModel(DeclarativeBase):
     bool_field = Column(Boolean(), default=False)

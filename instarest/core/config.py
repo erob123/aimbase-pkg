@@ -1,28 +1,26 @@
 import os
-import enum
-from typing import Optional, Any
+from typing import Any, Generic, TypeVar
 from pydantic import BaseSettings, PostgresDsn, validator
 
-# load the environment name, local, test, staging, or production
-class EnvironmentSettings(BaseSettings):
-    environment: str = "test"
+environment_settings = None
+settings = None
 
 # object to get other env vars
-class Settings(BaseSettings):
+class CoreSettings(BaseSettings):
     # general settings
     docs_ui_root_path: str = ""
     log_level: str = "INFO"
 
     # postgreSQL settings
-    postgres_user: str = ""
+    postgres_user: str
     postgres_password: str
-    postgres_server: str = "db"
-    postgres_port: str = "5432"
+    postgres_server: str
+    postgres_port: str
     postgres_db: str
-    sqlalchemy_database_uri: Optional[PostgresDsn] = None
+    sqlalchemy_database_uri: PostgresDsn | None = None
 
     @validator("sqlalchemy_database_uri", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: dict[str, Any]) -> Any:
+    def assemble_db_connection(cls, v: str | None, values: dict[str, Any]) -> Any:
         # pylint: disable=no-self-argument
 
         if isinstance(v, str):
@@ -36,30 +34,66 @@ class Settings(BaseSettings):
             path=f"/{values.get('postgres_db') or ''}",
         )
 
-def get_env_file(environment_settings_in):
-    # get the base directory
-    BASEDIR = os.path.join(os.path.abspath(
-        os.path.dirname(__file__)), "env_var")
 
-    # final output, settings object, is built
-    env_file = ""
+CoreSettingsType = TypeVar("CoreSettingsType", bound=CoreSettings)
 
-    if environment_settings_in.environment == 'production':
-        env_file = os.path.join(BASEDIR, "production.env")
-    elif environment_settings_in.environment == 'staging':
-        env_file = os.path.join(BASEDIR, "staging.env")
-    elif environment_settings_in.environment == 'local':
-        # put local secrets into secrets.env and ensure on .gitignore, K8s injects staging and prod into env vars
-        env_file = (os.path.join(BASEDIR, "local.env"),
-                    os.path.join(BASEDIR, "secrets.env"))
-    elif environment_settings_in.environment == 'development':
-        env_file = (os.path.join(BASEDIR, "development.env"),
-                    os.path.join(BASEDIR, "secrets.env"))
-    else:
-        env_file = os.path.join(BASEDIR, "test.env")
+# load the environment name, local, test, staging, or production
+class EnvironmentSettings(BaseSettings, Generic[CoreSettingsType]):
+    environment: str
+    """
+    Environment name, e.g., "local", "test", "staging", "production".  Needs
+    to match the name of the environment file in the env_vars folder.
+    """
 
-    return env_file
+    secrets: bool = False
+    """
+    Whether to load secrets from the secrets.env file.  This is only used for
+    local and development environments.
+    """
 
-environment_settings = EnvironmentSettings()
-settings = Settings(_env_file=get_env_file(
-    environment_settings), _env_file_encoding='utf-8')
+    env_var_folder: str = "./env_vars"
+    """
+    Folder where environment files are stored.
+    """
+
+    settings_type: CoreSettingsType = CoreSettings
+    """
+    Type of settings object to return.
+    """
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+    def pull_settings(self) -> CoreSettingsType:
+        """
+        Pull settings from environment variables, and load them into the environment.
+        """
+        # load environment variables from file
+        env_file = os.path.join(self.env_var_folder, f"{self.environment}.env")
+
+        # if file doesnt exist, raise error
+        if not os.path.exists(env_file):
+            raise FileNotFoundError(
+                f"Environment file {env_file} not found.  Please create it.")
+
+        if self.secrets:
+            secrets_file = os.path.join(
+                self.env_var_folder, "secrets.env")
+            
+            if not os.path.exists(secrets_file):
+                raise FileNotFoundError(
+                    f"Secrets file {secrets_file} not found.  Please create it.")
+            
+            env_file = (env_file, secrets_file)
+
+        return self.settings_type(_env_file=env_file, _env_file_encoding='utf-8')
+
+def set_core_settings(new_environment_settings: EnvironmentSettings) -> None:
+    """
+    Set the environment settings and core settings objects.
+    """
+    global environment_settings, settings
+
+    environment_settings = new_environment_settings
+    settings = environment_settings.pull_settings()

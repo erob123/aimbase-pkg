@@ -1,11 +1,11 @@
 import os
 from unittest import mock
-from instarest.core.config import EnvironmentSettings, Settings, settings, get_env_file
+from instarest.core.config import EnvironmentSettings, CoreSettings, settings, get_env_file
 
 BASEDIR = os.path.join(os.path.abspath(os.path.dirname("./instarest/core/config.py")), "env_var")
 
 def test_settings_exists():
-    assert isinstance(settings, Settings)
+    assert isinstance(settings, CoreSettings)
 
 @mock.patch.dict(os.environ, clear=True) # clear=True is needed to clear the environment variables
 def test_environment_test_default():

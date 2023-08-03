@@ -4,5 +4,6 @@ from instarest.db.session import SessionLocal
 from instarest.routers.base import RouterBase
 from instarest.schemas.base import SchemaBase
 from instarest.crud.base import CRUDBase
-from instarest.core import config, logging
+import instarest.core.config as config
+from instarest.core.logging import LogConfig, SuppressSpecificLogItemFilter
 from instarest.initializer import Initializer
