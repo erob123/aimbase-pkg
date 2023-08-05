@@ -5,22 +5,25 @@ from instarest import (
     RouterBase,
     SchemaBase,
     CRUDBase,
-    config,
     Initializer,
 )
+from aimbase.src.core import config as aimbase_config
 
 from sqlalchemy import Column, String, Boolean
 
 # tell the app where to find the environment variables
-ENV_VAR_FOLDER = os.path.join(os.path.abspath(
-        os.path.dirname(__file__)), "env_vars")
+ENV_VAR_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "env_vars")
 
-environment_settings = config.EnvironmentSettings(environment="local", env_var_folder=ENV_VAR_FOLDER)
-config.set_core_settings(environment_settings)
+aimbase_environment_settings = aimbase_config.AimbaseEnvironmentSettings(
+    environment="local", env_var_folder=ENV_VAR_FOLDER
+)
+aimbase_config.set_aimbase_settings(aimbase_environment_settings)
+
 
 class EmptyTestModel(DeclarativeBase):
     bool_field = Column(Boolean(), default=False)
     title = Column(String(), default="title")
+
 
 # class DocumentModel()
 
@@ -50,5 +53,5 @@ app_base = AppBase(crud_routers=[test_router], app_name="Test App API")
 # automagic and version app
 auto_app = app_base.get_autowired_app()
 
-#core underlying app
+# core underlying app
 app = app_base.get_core_app()

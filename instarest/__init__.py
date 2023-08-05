@@ -1,9 +1,9 @@
-from instarest.apps.base import AppBase
-from instarest.db.base_class import DeclarativeBase
-from instarest.db.session import SessionLocal
-from instarest.routers.base import RouterBase
-from instarest.schemas.base import SchemaBase
-from instarest.crud.base import CRUDBase
-import instarest.core.config as config
-from instarest.core.logging import LogConfig, SuppressSpecificLogItemFilter
-from instarest.initializer import Initializer
+from instarest.src.apps.base import AppBase
+from instarest.src.db.base_class import DeclarativeBase
+from instarest.src.db.session import SessionLocal
+from instarest.src.routers.base import RouterBase
+from instarest.src.schemas.base import SchemaBase
+from instarest.src.crud.base import CRUDBase
+import instarest.src.core.config as config
+from instarest.src.core.logging import LogConfig, SuppressSpecificLogItemFilter
+from instarest.src.initializer import Initializer

@@ -2,8 +2,8 @@ import os
 from typing import Any, Generic, TypeVar
 from pydantic import BaseSettings, PostgresDsn, validator
 
-environment_settings = None
-settings = None
+environment_settings = None # :meta private:
+settings = None # :meta private:
 
 # object to get other env vars
 class CoreSettings(BaseSettings):
@@ -97,3 +97,25 @@ def set_core_settings(new_environment_settings: EnvironmentSettings) -> None:
 
     environment_settings = new_environment_settings
     settings = environment_settings.pull_settings()
+
+def get_core_settings() -> CoreSettings:
+    """
+    Get the core settings object.
+    """
+    global settings
+
+    if settings is None:
+        raise ValueError("Settings not initialized.  Please call set_core_settings() first.")
+
+    return settings
+
+def get_environment_settings() -> EnvironmentSettings:
+    """
+    Get the environment settings object.
+    """
+    global environment_settings
+
+    if environment_settings is None:
+        raise ValueError("Settings not initialized.  Please call set_core_settings() first.")
+
+    return environment_settings

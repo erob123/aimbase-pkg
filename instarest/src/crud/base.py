@@ -7,7 +7,7 @@ from sqlalchemy import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import select, update
 
-from instarest.db.base_class import DeclarativeBase
+from instarest.src.db.base_class import DeclarativeBase
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 

@@ -1,8 +1,8 @@
 from pydantic import create_model, BaseModel
 from pydantic.main import ModelMetaclass
 from typing import Generic, TypeVar
-from instarest.db.base_class import DeclarativeBase
-from instarest.utils.models import (
+from instarest.src.db.base_class import DeclarativeBase
+from instarest.src.utils.models import (
     dict_column_attrs_with_id,
     dict_optional_column_attrs_no_id,
     dict_relationship_attrs,

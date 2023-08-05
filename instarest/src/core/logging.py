@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel
-from .config import settings
+from .config import get_core_settings
 import logging
 from logging.config import dictConfig
 
@@ -9,7 +9,7 @@ class LogConfig(BaseModel):
 
     LOGGER_NAME: str = "base_logger"
     LOG_FORMAT: str = "%(levelprefix)s | %(asctime)s | %(message)s"
-    LOG_LEVEL: str = settings.log_level
+    LOG_LEVEL: str = get_core_settings().log_level
 
     # Logging config
     version = 1

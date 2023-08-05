@@ -1,13 +1,13 @@
 import os
 from typing import Any
 from pydantic import BaseModel, validator
-from aimbase.core.constants import MODEL_CACHE_BASEDIR
-from aimbase.crud.base import CRUDBaseAIModel
-from aimbase.db.base import BaseAIModel
+from aimbase.src.core.constants import MODEL_CACHE_BASEDIR
+from aimbase.src.crud.base import CRUDBaseAIModel
+from aimbase.src.db.base import BaseAIModel
 from minio import Minio
 from sqlalchemy.orm import Session
 from pathlib import Path
-from aimbase.core.minio import download_folder_from_minio
+from aimbase.src.core.minio import download_folder_from_minio
 from instarest import LogConfig
 from logging import Logger
 

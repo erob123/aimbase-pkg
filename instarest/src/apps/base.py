@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_versioning import VersionedFastAPI
 
-from instarest.routers.base import RouterBase
-from ..core.config import settings
+from instarest.src.routers.base import RouterBase
+from ..core.config import get_core_settings
 from ..core.logging import LogConfig
 from ..dependencies import httpx_client
 
@@ -47,7 +47,7 @@ class AppBase:
     def setup(self):
         # initiate the app and tell it that there is a proxy prefix of /api that gets stripped
         # (only effects the loading of the swagger and redoc UIs)
-        self.core_app = FastAPI(title=str(self.app_name), root_path=settings.docs_ui_root_path,
+        self.core_app = FastAPI(title=str(self.app_name), root_path=get_core_settings().docs_ui_root_path,
                     responses={404: {"description": "Not found"}})
         
         for router_base in self.crud_routers:
@@ -61,8 +61,8 @@ class AppBase:
         self.logger.error("Dummy Error")
         self.logger.debug("Dummy Debug")
         self.logger.warning("Dummy Warning")
-        self.logger.info("UI Root: %s", settings.docs_ui_root_path)
-        self.logger.info("log_level: %s", settings.log_level)
+        self.logger.info("UI Root: %s", get_core_settings().docs_ui_root_path)
+        self.logger.info("log_level: %s", get_core_settings().log_level)
         self.logger.warning("Test filtering this_should_be_filtered_out")
 
         origins = [
@@ -78,7 +78,7 @@ class AppBase:
         # ensure to copy over all the non-title args to the original FastAPI call...read docs here: https://pypi.org/project/fastapi-versioning/
         self.autowired_app = VersionedFastAPI(self.core_app,
                                         version_format='{major}',
-                                        prefix_format='/v{major}', default_api_version=1, root_path=settings.docs_ui_root_path)
+                                        prefix_format='/v{major}', default_api_version=1, root_path=get_core_settings().docs_ui_root_path)
 
         # add middleware here since this is the app that deploys
         self.autowired_app.add_middleware(

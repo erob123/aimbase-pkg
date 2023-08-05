@@ -1,5 +1,5 @@
 
-from .config import settings
+from .config import aimbase_settings
 from .logging import logger
 from fastapi import HTTPException
 from minio.error import InvalidResponseError
@@ -10,20 +10,20 @@ from tqdm import tqdm
 
 def build_client():
 
-    if not settings.minio_region:
+    if not aimbase_settings.minio_region:
         return Minio(
-                settings.minio_endpoint_url,
-                access_key=settings.minio_access_key,
-                secret_key=settings.minio_secret_key,
-                secure=settings.minio_secure
+                aimbase_settings.minio_endpoint_url,
+                access_key=aimbase_settings.minio_access_key,
+                secret_key=aimbase_settings.minio_secret_key,
+                secure=aimbase_settings.minio_secure
             )
 
     return Minio(
-            settings.minio_endpoint_url,
-            access_key=settings.minio_access_key,
-            secret_key=settings.minio_secret_key,
-            secure=settings.minio_secure,
-            region=settings.minio_region
+            aimbase_settings.minio_endpoint_url,
+            access_key=aimbase_settings.minio_access_key,
+            secret_key=aimbase_settings.minio_secret_key,
+            secure=aimbase_settings.minio_secure,
+            region=aimbase_settings.minio_region
         )
 
 def download_folder_from_minio(s3: Minio, folder_name: str) -> str:
@@ -36,7 +36,7 @@ def download_folder_from_minio(s3: Minio, folder_name: str) -> str:
 
     try:
         # List all objects in the bucket with the given prefix (folder_name)
-        objects = s3.list_objects(bucket_name=settings.minio_bucket_name, prefix=folder_name)
+        objects = s3.list_objects(bucket_name=aimbase_settings.minio_bucket_name, prefix=folder_name)
 
         # Sort the objects to ensure a deterministic order of processing files
         sorted_objects = sorted(objects, key=lambda obj: obj.object_name)
@@ -46,7 +46,7 @@ def download_folder_from_minio(s3: Minio, folder_name: str) -> str:
             local_file_path = local_folder_path / filename
 
             # Download and write the file contents to disk while updating the hash
-            data = s3.get_object(bucket_name=settings.minio_bucket_name, object_name=filename)
+            data = s3.get_object(bucket_name=aimbase_settings.minio_bucket_name, object_name=filename)
             with open(local_file_path, 'wb') as f:
                 for chunk in tqdm(data.stream(32*1024), unit='B', unit_scale=True):
                     f.write(chunk)

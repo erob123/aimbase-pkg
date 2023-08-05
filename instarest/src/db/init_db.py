@@ -1,4 +1,4 @@
-from instarest.db.base_class import DeclarativeBase  # noqa: F401
+from instarest.src.db.base_class import DeclarativeBase  # noqa: F401
 from .session import engine
 
 # make sure all SQL Alchemy models are imported in your underlying app before initializing DB

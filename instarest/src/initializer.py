@@ -1,8 +1,8 @@
-from instarest.db.base_class import DeclarativeBase
-from instarest.db.init_db import init_db, wipe_db
-from instarest.db.session import SessionLocal
-from instarest.core.config import environment_settings
-from instarest.core.logging import LogConfig
+from instarest.src.db.base_class import DeclarativeBase
+from instarest.src.db.init_db import init_db, wipe_db
+from instarest.src.db.session import SessionLocal
+from instarest.src.core.config import get_environment_settings
+from instarest.src.core.logging import LogConfig
 
 class Initializer:
     def __init__(self, Base: DeclarativeBase):
@@ -18,7 +18,7 @@ class Initializer:
     def execute(self, migration_toggle = False) -> None:
 
         # environment can be one of 'local', 'test', 'staging', 'production'
-        environment = environment_settings.environment
+        environment = get_environment_settings().environment
 
         self.logger.info(f"Using initialization environment: {environment}")
         self.logger.info(f"Using migration toggle: {migration_toggle}")

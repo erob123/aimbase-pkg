@@ -9,7 +9,7 @@ from sqlalchemy import (
     Enum,
     inspect,
 )
-from instarest.db.base_class import DeclarativeBase
+from instarest.src.db.base_class import DeclarativeBase
 
 
 def remove_endstr(str: str, sub: str) -> str:

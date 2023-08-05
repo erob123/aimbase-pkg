@@ -1,8 +1,8 @@
 from fastapi import Depends, APIRouter, HTTPException
 from pydantic import UUID4, BaseModel
-from instarest.schemas.base import SchemaBase
-from instarest.dependencies import get_db
-from instarest.crud.base import CRUDBase
+from instarest.src.schemas.base import SchemaBase
+from instarest.src.dependencies import get_db
+from instarest.src.crud.base import CRUDBase
 from sqlalchemy.orm import Session
 from typing import Generic, TypeVar
 
