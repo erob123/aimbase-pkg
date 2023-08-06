@@ -7,3 +7,4 @@ from instarest.src.crud.base import CRUDBase
 import instarest.src.core.config as config
 from instarest.src.core.logging import LogConfig, SuppressSpecificLogItemFilter
 from instarest.src.initializer import Initializer
+from instarest.src.dependencies import get_db, httpx_client

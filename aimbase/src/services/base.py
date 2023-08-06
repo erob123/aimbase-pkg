@@ -11,7 +11,6 @@ from aimbase.src.core.minio import download_folder_from_minio
 from instarest import LogConfig
 from logging import Logger
 
-# TODO: minio dependency init, and env var loading / inheritance
 class BaseAIInferenceService(BaseModel):
 
     # one of sha256 or model_name must be provided

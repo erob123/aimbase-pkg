@@ -1,4 +1,6 @@
 from typing import TypeVar
+
+from pydantic import validator
 from instarest.src.core.config import (
     CoreSettings,
     EnvironmentSettings,
@@ -10,9 +12,25 @@ aimbase_settings = None # :meta private:
 
 class AimbaseSettings(CoreSettings):
     """
-    Settings specific to this application.
+    Settings specific to aimbase.
     """
-    aimbase_specific_setting: str = "aimbase_specific_setting"
+
+    minio_bucket_name: str = ""
+    minio_endpoint_url: str = ""
+    minio_access_key: str = ""
+    minio_secret_key: str = ""
+    minio_region: str = ""
+    minio_secure: bool = True
+
+    # validator to remove http:// or https:// from the minio_undpoint_url
+    @validator("minio_endpoint_url", pre=True)
+    def remove_http_or_https(cls, v: str) -> str:
+        # pylint: disable=no-self-argument
+        if v.startswith("http://"):
+            return v[len("http://"):]
+        if v.startswith("https://"):
+            return v[len("https://"):]
+        return v
 
 
 AimbaseSettingsType = TypeVar("AimbaseSettingsType", bound=AimbaseSettings)
