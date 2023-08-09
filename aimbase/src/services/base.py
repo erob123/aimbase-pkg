@@ -41,6 +41,13 @@ class BaseAIInferenceService(BaseModel):
     @validator("logger", pre=True, always=True)
     def set_logger(cls, v):
         return v or LogConfig(cls.__name__).build_logger()
+    
+    def dev_init(self):
+        """
+        Initialize the service object for development purposes.
+        """
+        
+        raise NotImplementedError("dev_init() not implemented for this service.")
 
     def initialize(self):
         """
@@ -54,6 +61,9 @@ class BaseAIInferenceService(BaseModel):
             if self.model_name is not None and self.db_object.model_name != self.model_name:
                 raise ValueError(f"Model name {self.model_name} does not match model name {self.db_object.model_name} on DB object")
             
+            if self.model_name is None:
+                self.model_name = self.db_object.model_name
+            
         elif self.model_name is not None:
             self.db_object = self.get_obj_by_model_name()
 
@@ -61,12 +71,12 @@ class BaseAIInferenceService(BaseModel):
             raise ValueError("SHA256 or model name not found in the database.")
 
         # TODO: verify
-        model_cache_path = os.path.join(MODEL_CACHE_BASEDIR, self.db_object.model_name)
+        model_cache_path = self.get_model_cache_path()
 
         # try to load the model from the cache & close out if successful
         if os.path.isdir(model_cache_path):
             try:
-                self.load_model_from_cache(model_cache_path)
+                self.load_model_from_cache()
                 self.initialized = True
                 return
             except:
@@ -75,7 +85,7 @@ class BaseAIInferenceService(BaseModel):
         # Create the directory if it doesn't exist
         Path(model_cache_path).mkdir(parents=True, exist_ok=True)
 
-        model_hash = self.download_model(model_cache_path)
+        model_hash = self.download_model()
 
         # if self.sha256 is not None, validate that the hash matches
         if self.sha256 is None:
@@ -83,37 +93,49 @@ class BaseAIInferenceService(BaseModel):
         elif self.sha256 != model_hash:
             raise ValueError(f"SHA256 hash {self.sha256} does not match downloaded model hash {model_hash}")
             
-        self.load_model_from_cache(model_cache_path)
+        self.load_model_from_cache()
         self.initialized = True
 
-    def download_model(self, model_cache_path: str):
+    def get_model_cache_path(self):
+        """
+        Get the path to the model cache.
+        """
+        if self.model_name is None:
+            raise ValueError("Model name not set.")
+        else:
+            return os.path.join(MODEL_CACHE_BASEDIR, self.model_name)
+
+    def download_model(self):
         """
         Download the model from the internet or Minio and cache it locally.
         Prioritizes Minio if prioritize_internet_download is False, but 
         will try both ways.
+
+        Returns the SHA256 hash of the downloaded model.
         """
 
         try: 
             if self.prioritize_internet_download:
                 # try internet download first
                 try:
-                    self.download_model_internet(model_cache_path)
+                    return self.download_model_internet()
                 except:
                     # if that fails, try Minio
-                    self.download_model_minio(model_cache_path)
+                    return self.download_model_minio()
             else:
                 # try Minio first
                 try:
-                    self.download_model_minio(model_cache_path)
+                    return self.download_model_minio()
                 except:
                     # if that fails, try internet
-                    self.download_model_internet(model_cache_path)
+                    return self.download_model_internet()
         except:
             raise ValueError("Could not download model from internet or Minio.")
 
-    def download_model_minio(self, model_cache_path: str):
+    def download_model_minio(self):
         """
         Download the model from Minio and cache it locally.
+        Returns the SHA256 hash of the downloaded model.
         Do not override this method.
         """
 
@@ -121,19 +143,24 @@ class BaseAIInferenceService(BaseModel):
         if self.s3 is None:
             raise ValueError("Minio client is not set.")
 
+        model_cache_path = self.get_model_cache_path()
+
         # download the model folder from minio
         self.logger.info(f"Downloading model from Minio to {model_cache_path}")
-        download_folder_from_minio(s3=self.s3, dir_name=model_cache_path)
+        model_hash = download_folder_from_minio(s3=self.s3, dir_name=model_cache_path)
         self.logger.info(f"Downloaded model from Minio to {model_cache_path}")
 
+        return model_hash
+
     
-    def load_model_from_cache(self, model_cache_path: str):
+    def load_model_from_cache(self):
         """
         Load the model from the cache into self.model.
         Overriden by child classes as needed.
         """
 
         self.model = "replace me"
+        raise NotImplementedError("load_model_from_cache() not implemented for this service.")
 
     def get_obj_by_sha256(self):
         """
@@ -151,14 +178,14 @@ class BaseAIInferenceService(BaseModel):
 
         return self.crud.get_by_model_name(self.db, model_name=self.model_name)
     
-    def download_model_internet(self, model_cache_path: str):
+    def download_model_internet(self):
         """
         Download the model from the internet and cache it locally.
         Returns the SHA256 hash of the downloaded model.
         Overriden by child classes as needed.
         """
 
-        return "12345"
+        raise NotImplementedError("download_model_internet() not implemented for this service.")
 
 
 # TODO: add upsert / training service that keeps minio and DB in line

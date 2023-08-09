@@ -17,7 +17,7 @@ class Initializer:
 
     def execute(self, migration_toggle = False) -> None:
 
-        # environment can be one of 'local', 'test', 'staging', 'production'
+        # environment can be one of 'local', 'development, 'test', 'staging', 'production'
         environment = get_environment_settings().environment
 
         self.logger.info(f"Using initialization environment: {environment}")

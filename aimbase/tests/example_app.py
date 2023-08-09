@@ -1,4 +1,5 @@
 import os
+from aimbase.src.initializer import AimbaseInitializer
 from instarest import (
     AppBase,
     DeclarativeBase,
@@ -27,11 +28,8 @@ class EmptyTestModel(DeclarativeBase):
 
 # class DocumentModel()
 
-# Ensure all SQLAlchemy models are defined or imported before initializing
-# Otherwise relationships in DB can be defined incorrectly
-# for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
-initializer = Initializer(DeclarativeBase)
-initializer.execute()
+Initializer(DeclarativeBase).execute()
+AimbaseInitializer().execute()
 
 # built pydantic data transfer schemas automagically
 crud_schemas = SchemaBase(EmptyTestModel)

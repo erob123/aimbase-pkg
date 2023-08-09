@@ -67,3 +67,22 @@ def download_folder_from_minio(s3: Minio, folder_name: str) -> str:
     hex_dig = hash_object.hexdigest()
 
     return hex_dig
+
+def upload_folder_to_minio(s3: Minio, folder_name: str, folder_path: str) -> str:
+    pass
+
+def calculate_folder_hash(folder_path: str) -> str:
+    hash_object = hashlib.sha256()
+
+    try:
+        files = sorted(item for item in Path(folder_path).rglob('*') if item.is_file())
+        for item in files:
+            with open(item, 'rb') as f:
+                while chunk := f.read(32*1024):
+                    hash_object.update(chunk)
+    
+    except Exception as e:
+        print(f"An error occurred while calculating hash: {e}")
+        raise
+
+    return hash_object.hexdigest()
