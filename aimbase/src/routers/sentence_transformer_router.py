@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from aimbase.src.crud.base import CRUDBaseAIModel
-from aimbase.src.services.sentence_transformers_inference import SentenceTransformersInferenceService
+from aimbase.src.services.sentence_transformer_inference import SentenceTransformerInferenceService
 from instarest.src.routers.base import RouterBase
 from instarest.src.schemas.base import SchemaBase
 from instarest.src.dependencies import get_db, get_minio
@@ -28,7 +28,7 @@ class SentenceTransformersRouter(RouterBase[SchemaBaseType, CRUDBaseAIModelType]
 
         Same as instarest.RouterBase, with the addition of:
 
-        * `sentence_transformers_inference_service`: SentenceTransformerInferenceService object, which contains the Sentence Transformers model and inference methods
+        * `sentence_transformer_inference_service`: SentenceTransformerInferenceService object, which contains the Sentence Transformers model and inference methods
         """
 
         super().__init__(schema_base, crud_base, prefix, allow_delete)
@@ -64,7 +64,7 @@ class SentenceTransformersRouter(RouterBase[SchemaBaseType, CRUDBaseAIModelType]
         ) -> Embeddings:
             
             try:
-                service = self._build_sentence_transformers_inference_service(db, s3)
+                service = self._build_sentence_transformer_inference_service(db, s3)
             except Exception as e:
                 raise build_model_not_initialized_error()
 
@@ -72,8 +72,8 @@ class SentenceTransformersRouter(RouterBase[SchemaBaseType, CRUDBaseAIModelType]
             
             return Embeddings(embeddings=embeddings)
         
-    def _build_sentence_transformers_inference_service(self, db: Session, s3: Minio | None = None):
-        service = SentenceTransformersInferenceService(
+    def _build_sentence_transformer_inference_service(self, db: Session, s3: Minio | None = None):
+        service = SentenceTransformerInferenceService(
             model_name=self.model_name,
             db=db,
             crud=self.crud_base,

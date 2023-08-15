@@ -2,7 +2,7 @@ import os
 from aimbase.src.crud.base import CRUDBaseAIModel
 from aimbase.src.db.base import BaseAIModel
 from aimbase.src.initializer import AimbaseInitializer
-from aimbase.src.routers.sentence_transformers_router import SentenceTransformersRouter
+from aimbase.src.routers.sentence_transformer_router import SentenceTransformersRouter
 from instarest import (
     AppBase,
     DeclarativeBase,

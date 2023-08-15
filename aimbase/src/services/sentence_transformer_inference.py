@@ -4,7 +4,7 @@ from aimbase.src.core.minio import calculate_folder_hash
 from aimbase.src.services.base import BaseAIInferenceService
 
 
-class SentenceTransformersInferenceService(BaseAIInferenceService):
+class SentenceTransformerInferenceService(BaseAIInferenceService):
     # all-MiniLM-L6-v2
     # internal only
     sentence_transformer_class: Any | None = None
