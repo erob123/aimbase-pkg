@@ -10,7 +10,7 @@ SchemaBaseType = TypeVar("SchemaBaseType", bound=SchemaBase)
 CRUDBaseType = TypeVar("CRUDBaseType", bound=CRUDBase)
 
 
-class RouterBase(Generic[SchemaBaseType]):
+class RouterBase(Generic[SchemaBaseType, CRUDBaseType]):
     class ErrorMessage(BaseModel):
         detail: str = ""
 

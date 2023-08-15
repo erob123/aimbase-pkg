@@ -4,7 +4,7 @@ from aimbase.src.core.minio import calculate_folder_hash
 from aimbase.src.services.base import BaseAIInferenceService
 
 
-class SentenceTransformerInferenceService(BaseAIInferenceService):
+class SentenceTransformersInferenceService(BaseAIInferenceService):
     # all-MiniLM-L6-v2
     # internal only
     sentence_transformer_class: Any | None = None
@@ -17,7 +17,7 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
         self.download_model_internet()
 
         # upload model to minio
-        # TODO
+        self.upload_model_to_minio()
 
         # delete the model from the cache and all files within directory
         shutil.rmtree(self.get_model_cache_path())

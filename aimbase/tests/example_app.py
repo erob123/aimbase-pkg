@@ -1,16 +1,15 @@
 import os
+from aimbase.src.crud.base import CRUDBaseAIModel
+from aimbase.src.db.base import BaseAIModel
 from aimbase.src.initializer import AimbaseInitializer
+from aimbase.src.routers.sentence_transformers_router import SentenceTransformersRouter
 from instarest import (
     AppBase,
     DeclarativeBase,
-    RouterBase,
     SchemaBase,
-    CRUDBase,
     Initializer,
 )
 from aimbase.src.core import config as aimbase_config
-
-from sqlalchemy import Column, String, Boolean
 
 # tell the app where to find the environment variables
 ENV_VAR_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), "env_vars")
@@ -20,33 +19,26 @@ aimbase_environment_settings = aimbase_config.AimbaseEnvironmentSettings(
 )
 aimbase_config.set_aimbase_settings(aimbase_environment_settings)
 
-
-class EmptyTestModel(DeclarativeBase):
-    bool_field = Column(Boolean(), default=False)
-    title = Column(String(), default="title")
-
-
-# class DocumentModel()
-
 Initializer(DeclarativeBase).execute()
 AimbaseInitializer().execute()
 
 # built pydantic data transfer schemas automagically
-crud_schemas = SchemaBase(EmptyTestModel)
+crud_schemas = SchemaBase(BaseAIModel)
 
-# build crud db service automagically
-crud_test = CRUDBase(EmptyTestModel)
+# build db service automagically
+crud_test = CRUDBaseAIModel(BaseAIModel)
 
-# build crud router automagically
-test_router = RouterBase(
+# build ai router automagically
+test_router = SentenceTransformersRouter(
+    model_name="all-MiniLM-L6-v2",
     schema_base=crud_schemas,
     crud_base=crud_test,
-    prefix="/test",
+    prefix="/sentences",
     allow_delete=True,
 )
 
 # setup base up from routers
-app_base = AppBase(crud_routers=[test_router], app_name="Test App API")
+app_base = AppBase(crud_routers=[test_router], app_name="Aimbase Inference Test App API")
 
 # automagic and version app
 auto_app = app_base.get_autowired_app()

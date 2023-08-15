@@ -7,7 +7,7 @@ from aimbase.src.db.base import BaseAIModel
 from minio import Minio
 from sqlalchemy.orm import Session
 from pathlib import Path
-from aimbase.src.core.minio import download_folder_from_minio
+from aimbase.src.core.minio import download_folder_from_minio, upload_folder_to_minio
 from instarest import LogConfig
 from logging import Logger
 
@@ -121,18 +121,18 @@ class BaseAIInferenceService(BaseModel):
                     return self.download_model_internet()
                 except:
                     # if that fails, try Minio
-                    return self.download_model_minio()
+                    return self.download_model_from_minio()
             else:
                 # try Minio first
                 try:
-                    return self.download_model_minio()
+                    return self.download_model_from_minio()
                 except:
                     # if that fails, try internet
                     return self.download_model_internet()
         except:
             raise ValueError("Could not download model from internet or Minio.")
 
-    def download_model_minio(self):
+    def download_model_from_minio(self):
         """
         Download the model from Minio and cache it locally.
         Returns the SHA256 hash of the downloaded model.
@@ -147,8 +147,28 @@ class BaseAIInferenceService(BaseModel):
 
         # download the model folder from minio
         self.logger.info(f"Downloading model from Minio to {model_cache_path}")
-        model_hash = download_folder_from_minio(s3=self.s3, dir_name=model_cache_path)
+        model_hash = download_folder_from_minio(s3=self.s3, folder_name=model_cache_path)
         self.logger.info(f"Downloaded model from Minio to {model_cache_path}")
+
+        return model_hash
+    
+    def upload_model_to_minio(self):
+        """
+        Upload the model to Minio.
+        Returns the SHA256 hash of the uploaded model.
+        Do not override this method.
+        """
+
+        # throw error if s3 is None
+        if self.s3 is None:
+            raise ValueError("Minio client is not set.")
+
+        model_cache_path = self.get_model_cache_path()
+
+        # upload the model folder to minio
+        self.logger.info(f"Uploading model from {model_cache_path} to Minio")
+        model_hash = upload_folder_to_minio(s3=self.s3, folder_name=model_cache_path)
+        self.logger.info(f"Uploaded model from {model_cache_path} to Minio")
 
         return model_hash
 

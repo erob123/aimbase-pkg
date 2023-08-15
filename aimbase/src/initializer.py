@@ -4,7 +4,7 @@ from minio.error import InvalidResponseError
 from aimbase.src.core.config import get_aimbase_environment_settings, get_aimbase_settings
 from aimbase.src.core.minio import build_client
 
-# fix minio folder hash to be recursive
+# VERIFY fix minio folder hash to be recursive
 # build upload model to minio and add to sentence transformer 
 # sentence transformers baseAIservice, initialization, single crud router with encoding
 # ST fine tuned ai service, initialization, single crud router with encoding
