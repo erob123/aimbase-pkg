@@ -8,46 +8,40 @@ os.environ["ENV_VAR_FOLDER"] = os.path.join(os.path.abspath(
         os.path.dirname(__file__)), "env_vars")
 os.environ["SECRETS"] = "false"
 
+from aimbase.crud.base import CRUDBaseAIModel
+from aimbase.db.base import BaseAIModel
+from aimbase.initializer import AimbaseInitializer
+from aimbase.routers.sentence_transformer_router import SentenceTransformersRouter
 from instarest import (
     AppBase,
     DeclarativeBase,
-    RouterBase,
     SchemaBase,
-    CRUDBase,
     Initializer,
 )
 
-from sqlalchemy import Column, String, Boolean
-
-class EmptyTestModel(DeclarativeBase):
-    bool_field = Column(Boolean(), default=False)
-    title = Column(String(), default="title")
-
-# Ensure all SQLAlchemy models are defined or imported before initializing
-# Otherwise relationships in DB can be defined incorrectly
-# for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
-initializer = Initializer(DeclarativeBase)
-initializer.execute()
+Initializer(DeclarativeBase).execute()
+AimbaseInitializer().execute()
 
 # built pydantic data transfer schemas automagically
-crud_schemas = SchemaBase(EmptyTestModel)
+crud_schemas = SchemaBase(BaseAIModel)
 
-# build crud db service automagically
-crud_test = CRUDBase(EmptyTestModel)
+# build db service automagically
+crud_test = CRUDBaseAIModel(BaseAIModel)
 
-# build crud router automagically
-test_router = RouterBase(
+# build ai router automagically
+test_router = SentenceTransformersRouter(
+    model_name="all-MiniLM-L6-v2",
     schema_base=crud_schemas,
     crud_base=crud_test,
-    prefix="/test",
+    prefix="/sentences",
     allow_delete=True,
 )
 
 # setup base up from routers
-app_base = AppBase(crud_routers=[test_router], app_name="Test App API")
+app_base = AppBase(crud_routers=[test_router], app_name="Aimbase Inference Test App API")
 
 # automagic and version app
 auto_app = app_base.get_autowired_app()
 
-#core underlying app
+# core underlying app
 app = app_base.get_core_app()

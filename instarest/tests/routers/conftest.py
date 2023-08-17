@@ -2,7 +2,7 @@ from collections.abc import Generator
 from unittest.mock import create_autospec
 import pytest
 from tests.example_app import app
-from instarest.src.routers.base import get_db
+from instarest.routers.base import get_db
 
 
 @pytest.fixture(scope="function", autouse=True)

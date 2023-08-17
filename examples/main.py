@@ -1,3 +1,13 @@
+# Make sure to set ENVIRONMENT, ENV_VAR_FOLDER, and SECRETS in your environment,
+# outside of any .env file.  This is to ensure that the correct environment
+# variables are loaded before the app is initialized.
+# Default values are: ENVIRONMENT=local, ENV_VAR_FOLDER=./env_vars, SECRETS=False if not set here
+import os
+os.environ["ENVIRONMENT"] = "local"
+os.environ["ENV_VAR_FOLDER"] = os.path.join(os.path.abspath(
+        os.path.dirname(__file__)), "env_vars")
+os.environ["SECRETS"] = "false"
+
 from instarest import (
     AppBase,
     DeclarativeBase,
@@ -10,12 +20,8 @@ from instarest import (
 
 from sqlalchemy import Column, String
 
-
 class SentenceModel(DeclarativeBase):
     text = Column(String)
-
-
-# class DocumentModel()
 
 # Ensure all SQLAlchemy models are defined or imported before initializing
 # Otherwise relationships in DB can be defined incorrectly

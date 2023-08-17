@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "instarest"
-version = "0.0.1"
+version = "0.0.2"
 description = "Declarative, instant REST APIs based on FastAPI, Pydantic, SQLAlchemy, and PostgreSQL"
 authors = ["Eric Robinson"]
 readme = "README.md"
@@ -32,7 +32,7 @@ pipdeptree = "^2.7.1"
 pruner = "^0.0.6"
 
 [tool.coverage.run]
-source = ["instarest"]
+source = ["src"]
 omit = ["__init__.py", "initial_data.py", "init_db.py"]
 
 [build-system]

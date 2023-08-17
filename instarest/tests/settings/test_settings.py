@@ -1,6 +1,6 @@
 import os
 from unittest import mock
-from instarest.src.core.config import (
+from instarest.core.config import (
     EnvironmentSettings,
     CoreSettings,
     get_core_settings,
