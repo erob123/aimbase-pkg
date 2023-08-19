@@ -2,9 +2,10 @@ from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from aimbase.crud.base import CRUDBaseAIModel
 from aimbase.services.sentence_transformer_inference import SentenceTransformerInferenceService
+from aimbase.dependencies import get_minio
 from instarest import RouterBase
 from instarest import SchemaBase
-from instarest import get_db, get_minio
+from instarest import get_db
 from sqlalchemy.orm import Session
 from minio import Minio
 from typing import TypeVar

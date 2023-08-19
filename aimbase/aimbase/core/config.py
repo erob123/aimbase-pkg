@@ -1,7 +1,7 @@
-from typing import TypeVar
+from typing import Any, TypeVar
 
-from pydantic import validator
-from instarest import (
+from pydantic import Field, validator
+from instarest.core.config import (
     CoreSettings,
     EnvironmentSettings,
     set_core_settings,
@@ -23,9 +23,8 @@ class AimbaseSettings(CoreSettings):
     minio_secure: bool = True
 
     # validator to remove http:// or https:// from the minio_undpoint_url
-    @validator("minio_endpoint_url", pre=True)
+    @validator("minio_endpoint_url", pre=True, always=True)
     def remove_http_or_https(cls, v: str) -> str:
-        # pylint: disable=no-self-argument
         if v.startswith("http://"):
             return v[len("http://"):]
         if v.startswith("https://"):
@@ -38,11 +37,8 @@ AimbaseSettingsType = TypeVar("AimbaseSettingsType", bound=AimbaseSettings)
 # make it possible to load AimbaseSettings from environment variables and to inherit from 
 # AimbaseEnvironmentSettings with generic settings type
 class AimbaseEnvironmentSettings(EnvironmentSettings[AimbaseSettingsType]):
-    
-    settings_type: AimbaseSettingsType = AimbaseSettings
-    """
-    Type of settings object to return.
-    """
+    def pull_settings(self, settings_type = AimbaseSettings) -> AimbaseSettingsType:
+        return super().pull_settings(settings_type)
 
 def set_aimbase_settings(new_aimbase_environment_settings: AimbaseEnvironmentSettings) -> None:
     """

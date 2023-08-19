@@ -56,16 +56,11 @@ class EnvironmentSettings(BaseSettings, Generic[CoreSettingsType]):
     Folder where environment files are stored.
     """
 
-    settings_type: CoreSettingsType = CoreSettings
-    """
-    Type of settings object to return.
-    """
-
     class Config:
         arbitrary_types_allowed = True
 
 
-    def pull_settings(self) -> CoreSettingsType:
+    def pull_settings(self, settings_type = CoreSettings) -> CoreSettingsType:
         """
         Pull settings from environment variables, and load them into the environment.
         """
@@ -87,7 +82,7 @@ class EnvironmentSettings(BaseSettings, Generic[CoreSettingsType]):
             
             env_file = (env_file, secrets_file)
 
-        return self.settings_type(_env_file=env_file, _env_file_encoding='utf-8')
+        return settings_type(_env_file=env_file, _env_file_encoding='utf-8')
 
 def set_core_settings(new_environment_settings: EnvironmentSettings) -> None:
     """

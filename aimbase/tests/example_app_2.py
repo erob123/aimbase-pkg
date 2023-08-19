@@ -9,7 +9,7 @@ os.environ["ENV_VAR_FOLDER"] = os.path.join(os.path.abspath(
 os.environ["SECRETS"] = "false"
 
 from aimbase.crud.base import CRUDBaseAIModel
-from aimbase.db.base import BaseAIModel
+from aimbase.db.base import BaseAIModel, FineTunedAIModel, FineTunedAIModelWithBaseModel
 from aimbase.initializer import AimbaseInitializer
 from aimbase.routers.sentence_transformer_router import SentenceTransformersRouter
 from instarest import (

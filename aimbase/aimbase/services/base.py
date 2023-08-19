@@ -31,6 +31,9 @@ class BaseAIInferenceService(BaseModel):
     initialized: bool = False
     logger: Logger | None = None
 
+    class Config:
+        arbitrary_types_allowed = True
+
     # pydantic validator to ensure that one of sha256 or model_name is provided
     @validator("model_name", pre=True, always=True)
     def either_sha256_or_model_name(cls, v, values):

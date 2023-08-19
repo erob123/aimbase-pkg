@@ -35,8 +35,19 @@ class FineTunedAIModel(DeclarativeBase):
         unique=True,
         nullable=False,
     )
+    type = Column(String(100), nullable=False)
+
+    __mapper_args__ = {
+        "polymorphic_identity": "FineTunedAIModel",
+        "polymorphic_on": "type",
+    }
 
 
 class FineTunedAIModelWithBaseModel(FineTunedAIModel):
+    id = Column(UUID, ForeignKey("finetunedaimodel.id"), primary_key=True)
     base_ai_model_id = Column(UUID, ForeignKey("baseaimodel.id"))
     base_ai_model = relationship("BaseAIModel")
+
+    __mapper_args__ = {
+        "polymorphic_identity": "FineTunedAIModelWithBaseModel",
+    }
