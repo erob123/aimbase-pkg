@@ -10,7 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from instarest import DeclarativeBase
 
-
+# TODO: Are local_cache_path and uploaded_minio needed?  If not, remove them.
 class BaseAIModel(DeclarativeBase):
     model_name = Column(String(), unique=True)
     local_cache_path = Column(String())

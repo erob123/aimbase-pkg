@@ -69,7 +69,7 @@ class SentenceTransformersRouter(RouterBase[SchemaBaseType, CRUDBaseAIModelType]
             except Exception as e:
                 raise build_model_not_initialized_error()
 
-            embeddings = service.model.encode(documents.documents)
+            embeddings = service.model.encode(documents.documents).tolist()
             
             return Embeddings(embeddings=embeddings)
         

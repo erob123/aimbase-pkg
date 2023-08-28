@@ -1,9 +1,10 @@
 import shutil
+import traceback
 from typing import Any
 from aimbase.core.minio import calculate_folder_hash
 from aimbase.services.base import BaseAIInferenceService
 
-
+# TODO: pull tracebacks out of all except blocks and handle at app level
 class SentenceTransformerInferenceService(BaseAIInferenceService):
     # all-MiniLM-L6-v2
     # internal only
@@ -14,7 +15,9 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
         Initialize the service object for development purposes.
         """
 
-        self.download_model_internet()
+        # init imports and download model from internet
+        self.initialize()
+        
 
         # upload model to minio
         self.upload_model_to_minio()
@@ -23,19 +26,21 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
         shutil.rmtree(self.get_model_cache_path())
 
     def initialize(self):
-        super().initialize()
-
-        self.initialized = False
         try:
             from sentence_transformers import SentenceTransformer
 
             self.sentence_transformer_class = SentenceTransformer
-            self.initialized = True
         except ImportError:
-            raise ImportError(
+            msg = (
                 "Could not import sentence_transformers python package. "
-                "Please install it with `pip install sentence-transformers` "
+                "Please install it with `pip install sentence-transformers`"
             )
+
+            self.logger.error(msg)
+            traceback.print_exc()
+            raise ImportError(msg)
+
+        super().initialize()
 
     def load_model_from_cache(self):
         """
@@ -51,7 +56,13 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
                 cache_folder=self.get_model_cache_path(),
             )
         except:
-            raise Exception("Model not found in cache.")
+            msg = (
+                "Model not found in cache."
+            )
+            self.logger.error(msg)
+            traceback.print_exc()
+
+            raise Exception(msg)
 
     def download_model_internet(self):
         """

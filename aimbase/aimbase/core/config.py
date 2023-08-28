@@ -1,4 +1,4 @@
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from pydantic import Field, validator
 from instarest.core.config import (
