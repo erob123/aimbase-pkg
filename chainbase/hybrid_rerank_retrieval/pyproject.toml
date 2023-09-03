@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "hybrid-rerank-retrieval"
+version = "0.0.1"
+description = "A hybrid approach to semantic query retri using the Beir rerank methodology"
+authors = ["erob123 <ejr443@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "hybrid_rerank_retrieval"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.0.275"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
