@@ -4,9 +4,9 @@ from typing import Any
 from aimbase.core.minio import calculate_folder_hash
 from aimbase.services.base import BaseAIInferenceService
 
+
 # TODO: pull tracebacks out of all except blocks and handle at app level
 class SentenceTransformerInferenceService(BaseAIInferenceService):
-    # all-MiniLM-L6-v2
     # internal only
     sentence_transformer_class: Any | None = None
 
@@ -17,7 +17,6 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
 
         # init imports and download model from internet
         self.initialize()
-        
 
         # upload model to minio
         self.upload_model_to_minio()
@@ -27,9 +26,7 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
 
     def initialize(self):
         try:
-            from sentence_transformers import SentenceTransformer
-
-            self.sentence_transformer_class = SentenceTransformer
+            self.import_dynamic_dependencies()
         except ImportError:
             msg = (
                 "Could not import sentence_transformers python package. "
@@ -45,20 +42,12 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
     def load_model_from_cache(self):
         """
         Load the model from the cache into self.model.
-        Overriden by child classes as needed.
         """
 
         try:
-            # load model from cache, note that this will try to download from internet if connection
-            # exists and model is not in cache
-            self.model = self.sentence_transformer_class(
-                model_name_or_path=self.model_name,
-                cache_folder=self.get_model_cache_path(),
-            )
+            self.model = self.cache_load_by_type()
         except:
-            msg = (
-                "Model not found in cache."
-            )
+            msg = "Model not found in cache."
             self.logger.error(msg)
             traceback.print_exc()
 
@@ -68,13 +57,52 @@ class SentenceTransformerInferenceService(BaseAIInferenceService):
         """
         Download the model from the internet and cache it locally.
         Returns the SHA256 hash of the downloaded model.
-        Overriden by child classes as needed.
         """
 
-        # download model to cache
-        self.sentence_transformer_class(
-            model_name_or_path=self.model_name, cache_folder=self.get_model_cache_path()
-        )
+        self.download_by_type()
 
         # calculate sha256 hash of model folder
         return calculate_folder_hash(self.get_model_cache_path())
+
+    def import_dynamic_dependencies(self):
+        """
+        Import the specific class needed from sentence-transformers package for this model.
+        This default is for SentenceTransformer.
+        Overriden by child classes as needed.
+        """
+
+        from sentence_transformers import SentenceTransformer
+
+        self.sentence_transformer_class = SentenceTransformer
+
+    def cache_load_by_type(self):
+        """
+        Specific cache load for the sentence_transformer_class being initialized.
+        This default is for SentenceTransformer.
+        Must return model loaded from local cache given self.model.
+        Does not need to handle errors, that is done elsewhere.
+
+        Returns the intantiated model.
+
+        Overriden by child classes as needed.
+        """
+
+        # the default SentenceTransformer class loads from cache first
+        return self.download_by_type()
+
+    def download_by_type(self):
+        """
+        Specific download for the sentence_transformer_class being initialized.
+        This default is for SentenceTransformer.
+        Must download from the internet and save the model in torch
+        format in self.get_model_cache_path().
+
+        Returns the intantiated model.
+
+        Overriden by child classes as needed.
+        """
+
+        # download model to cache and return instantiated model
+        return self.sentence_transformer_class(
+            model_name_or_path=self.model_name, cache_folder=self.get_model_cache_path()
+        )
