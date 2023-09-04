@@ -1,14 +1,19 @@
 from aimbase import (
-    SentenceTransformerInferenceService,
     CRUDBaseAIModel,
     BaseAIModel,
     get_minio,
 )
+
+from aimbase.services import (
+    SentenceTransformerInferenceService,
+    CrossEncoderInferenceService,
+)
+
 from instarest import get_db
 
 crud_base_ai = CRUDBaseAIModel(BaseAIModel)
 
-marco_service = SentenceTransformerInferenceService(
+marco_service = CrossEncoderInferenceService(
     model_name="cross-encoder/ms-marco-TinyBERT-L-6",
     db=next(get_db()),
     crud=crud_base_ai,

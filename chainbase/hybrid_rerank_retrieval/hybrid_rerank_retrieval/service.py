@@ -5,7 +5,11 @@ from langchain.document_loaders.csv_loader import CSVLoader
 from langchain.retrievers import BM25Retriever, EnsembleRetriever
 from langchain.vectorstores import FAISS
 from langchain.chains import RetrievalQA
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+from aimbase.services import (
+    SentenceTransformerInferenceService,
+    CrossEncoderInferenceService,
+)
 
 from app.aimodels.gpt4all.ai_services.completion_inference import (
     CompletionInference,
@@ -24,10 +28,30 @@ from sample_data import CHAT_DATASET_1_PATH
 
 
 class RetrievalService(BaseModel):
+    # must be provided and initialized (see validators)
+    sentence_inference_service: SentenceTransformerInferenceService
+    cross_encoder_inference_service: CrossEncoderInferenceService
     completion_inference: CompletionInference
+
+    # optional
     db: Session | None = None
     s3: Minio | None = None
-    sentence_model: Any | None = None  #: :meta private:
+
+    @validator("sentence_inference_service", pre=True, always=True)
+    def model_must_be_initialized(cls, v: str) -> str:
+        if not v.initialized:
+            raise ValueError(
+                "sentence_inference_service not initialized.  Please call initialize() on the SentenceTransformerInferenceService first."
+            )
+        return v
+
+    @validator("cross_encoder_inference_service", pre=True, always=True)
+    def model_must_be_initialized(cls, v: str) -> str:
+        if not v.initialized:
+            raise ValueError(
+                "cross_encoder_inference_service not initialized.  Please call initialize() on the CrossEncoderInferenceService first."
+            )
+        return v
 
     class Config:
         arbitrary_types_allowed = True
@@ -40,7 +64,7 @@ class RetrievalService(BaseModel):
         retriever = self._build_retriever(channel_names=[CHAT_DATASET_1_PATH])
 
         if summarize:
-            llm = self.completion_inference._build_llm(api_inputs)
+            llm = self.completion_inference._build_llm(query)
             results = self._retrieve_and_summarize(
                 llm,
                 query=query,
@@ -64,7 +88,7 @@ class RetrievalService(BaseModel):
             try:
                 sentence_model_db_obj = bertopic_embedding_pretrained.get_by_sha256(
                     db=self.db,
-                    sha256="ad2efe50dfaeea5243da9476d25249496872aa3dd8bfa5a3bbd05014f2822abc"
+                    sha256="ad2efe50dfaeea5243da9476d25249496872aa3dd8bfa5a3bbd05014f2822abc",
                 )
 
                 self.sentence_model = download_pickled_object_from_minio(
