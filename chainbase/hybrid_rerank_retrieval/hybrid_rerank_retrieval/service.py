@@ -11,34 +11,34 @@ from aimbase.services import (
     CrossEncoderInferenceService,
 )
 
-from app.aimodels.gpt4all.ai_services.completion_inference import (
-    CompletionInference,
-    CompletionInferenceInputs,
-)
-from app.chat_search.ai_services.marco_rerank_retriever import MarcoRerankRetriever
-from app.core.errors import ValidationError
-from app.core.minio import download_pickled_object_from_minio
-from app.core.model_cache import MODEL_CACHE_BASEDIR
+from .marco_rerank_retriever import MarcoRerankRetriever
+from .stis_embeddings import STISEmbeddings
+
+# from app.core.errors import ValidationError
+# from app.core.minio import download_pickled_object_from_minio
+# from app.core.model_cache import MODEL_CACHE_BASEDIR
 
 from sqlalchemy.orm import Session
 from minio import Minio
-from app.aimodels.bertopic.crud import bertopic_embedding_pretrained
 
-from sample_data import CHAT_DATASET_1_PATH
+# from app.aimodels.bertopic.crud import bertopic_embedding_pretrained
+
+# from sample_data import CHAT_DATASET_1_PATH
 
 
 class RetrievalService(BaseModel):
     # must be provided and initialized (see validators)
     sentence_inference_service: SentenceTransformerInferenceService
     cross_encoder_inference_service: CrossEncoderInferenceService
-    completion_inference: CompletionInference
 
     # optional
     db: Session | None = None
     s3: Minio | None = None
 
     @validator("sentence_inference_service", pre=True, always=True)
-    def model_must_be_initialized(cls, v: str) -> str:
+    def model_must_be_initialized(
+        cls, v: SentenceTransformerInferenceService
+    ) -> SentenceTransformerInferenceService:
         if not v.initialized:
             raise ValueError(
                 "sentence_inference_service not initialized.  Please call initialize() on the SentenceTransformerInferenceService first."
@@ -46,7 +46,9 @@ class RetrievalService(BaseModel):
         return v
 
     @validator("cross_encoder_inference_service", pre=True, always=True)
-    def model_must_be_initialized(cls, v: str) -> str:
+    def model_must_be_initialized(
+        cls, v: CrossEncoderInferenceService
+    ) -> CrossEncoderInferenceService:
         if not v.initialized:
             raise ValueError(
                 "cross_encoder_inference_service not initialized.  Please call initialize() on the CrossEncoderInferenceService first."
@@ -58,18 +60,19 @@ class RetrievalService(BaseModel):
 
     def retrieve(self, query: str, summarize=False):
         if not (isinstance(query, str) and isinstance(summarize, bool)):
-            raise ValidationError("must input query as str and summarize as bool")
+            raise ValueError("must input query as str and summarize as bool")
 
         # TODO: how to build dataset, version control or DB?
         retriever = self._build_retriever(channel_names=[CHAT_DATASET_1_PATH])
 
         if summarize:
-            llm = self.completion_inference._build_llm(query)
-            results = self._retrieve_and_summarize(
-                llm,
-                query=query,
-                retriever=retriever,
-            )
+            pass
+            # llm = self.completion_inference._build_llm(query)
+            # results = self._retrieve_and_summarize(
+            #     llm,
+            #     query=query,
+            #     retriever=retriever,
+            # )
         else:
             results = self._retrieve_only(
                 query=query,
@@ -82,29 +85,48 @@ class RetrievalService(BaseModel):
         self,
         channel_names=[],
     ):
-        # TODO: pull from minio
-        # model_name = os.path.join(MODEL_CACHE_BASEDIR, "all-MiniLM-L6-v2")
-        if self.sentence_model is None:
-            try:
-                sentence_model_db_obj = bertopic_embedding_pretrained.get_by_sha256(
-                    db=self.db,
-                    sha256="ad2efe50dfaeea5243da9476d25249496872aa3dd8bfa5a3bbd05014f2822abc",
-                )
-
-                self.sentence_model = download_pickled_object_from_minio(
-                    id=sentence_model_db_obj.id, s3=self.s3
-                )
-
-                local_embeddings = InitializedHuggingFaceEmbeddings(
-                    loaded_model=self.sentence_model
-                )
-            except:
-                # failed to load from db or minio, so load from huggingface if possible
-
-                model_name = "sentence-transformers/all-MiniLM-L6-v2"
-                local_embeddings = HuggingFaceEmbeddings(model_name=model_name)
+        local_embeddings = STISEmbeddings(
+            sentence_inference_service=self.sentence_inference_service
+        )
 
         path = channel_names[0]
+
+
+
+
+
+
+        # get DocumentModel objects from the database
+        document_models = document_crud.get_by_created_date_range(
+            db=self.db, start_date=None, end_date=None
+        )
+
+        # convert DocumentModel objects to Document objects
+        documents = []
+        for doc_model in document_models:
+            source_link = (
+                ""
+                if not doc_model.mattermost_document
+                or len(doc_model.mattermost_document) == 0
+                else f"{settings.mm_aoc_base_url}/pl/{doc_model.mattermost_document[0].message_id}"
+            )
+
+            document = Document(
+                page_content=doc_model.text,
+                metadata={
+                    "originated_from": doc_model.originated_from,
+                    "original_created_time": doc_model.original_created_time,
+                    "link": source_link,
+                },
+            )
+
+            documents.append(document)
+
+
+
+
+
+
         chat_texts = CSVLoader(path).load()
         chat_retriever = FAISS.from_documents(
             chat_texts, local_embeddings
@@ -142,16 +164,16 @@ class RetrievalService(BaseModel):
         result["source_documents"] = retriever.get_relevant_documents(query)
         return result
 
-    def _retrieve_and_summarize(self, llm, query=None, retriever=None):
-        ###Unknown: how to address FAISS chunking and add metadata
-        chain = RetrievalQA.from_chain_type(
-            llm=llm,
-            chain_type="stuff",
-            retriever=retriever,
-            input_key="input",
-            return_source_documents=True,
-            verbose=True,
-        )
+    # def _retrieve_and_summarize(self, llm, query=None, retriever=None):
+    #     ###Unknown: how to address FAISS chunking and add metadata
+    #     chain = RetrievalQA.from_chain_type(
+    #         llm=llm,
+    #         chain_type="stuff",
+    #         retriever=retriever,
+    #         input_key="input",
+    #         return_source_documents=True,
+    #         verbose=True,
+    #     )
 
-        result = chain({"input": f"{query}"})
-        return result
+    #     result = chain({"input": f"{query}"})
+    #     return result
