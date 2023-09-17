@@ -11,7 +11,7 @@ os.environ["SECRETS"] = "false"
 from instarest import (
     AppBase,
     DeclarativeBase,
-    RouterBase,
+    RESTRouter,
     SchemaBase,
     CRUDBase,
     Initializer,
@@ -36,7 +36,7 @@ crud_schemas = SchemaBase(EmptyTestModel)
 crud_test = CRUDBase(EmptyTestModel)
 
 # build crud router automagically
-test_router = RouterBase(
+test_router = RESTRouter(
     schema_base=crud_schemas,
     crud_base=crud_test,
     prefix="/test",

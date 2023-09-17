@@ -11,7 +11,7 @@ os.environ["SECRETS"] = "false"
 from instarest import (
     AppBase,
     DeclarativeBase,
-    RouterBase,
+    RESTRouter,
     SchemaBase,
     CRUDBase,
     config,
@@ -36,7 +36,7 @@ sentence_schemas = SchemaBase(SentenceModel)
 sentence_crud = CRUDBase(SentenceModel)
 
 # build crud router automagically
-sentence_router = RouterBase(
+sentence_router = RESTRouter(
     schema_base=sentence_schemas,
     crud_base=sentence_crud,
     prefix="/sentences",

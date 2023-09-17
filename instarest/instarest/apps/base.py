@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_versioning import VersionedFastAPI
 
-from instarest.routers.base import RouterBase
+from instarest.routers.rest import RESTRouter
 from ..core.config import get_core_settings
 from ..core.logging import LogConfig
 from ..dependencies import httpx_client
@@ -11,7 +11,7 @@ class AppBase:
      
     def __init__(
         self,
-        crud_routers: list[RouterBase],
+        crud_routers: list[RESTRouter],
         app_name: str = "API"
     ):
         """
@@ -23,7 +23,7 @@ class AppBase:
         """
 
         for router in crud_routers:
-            assert isinstance(router, RouterBase)
+            assert isinstance(router, RESTRouter)
 
         # DO NOT REORDER
         self.logger = LogConfig(LOGGER_NAME=self.__class__.__name__).build_logger()
