@@ -47,7 +47,7 @@ class RESTRouter(RouterBase):
         @self.router.post(
             "/",
             response_model=self.schema_base.Entity,
-            responses=type(self).responses,
+            responses=self.responses,
             summary=f"Create single {self.schema_base.Entity.__name__} object",
             response_description=f"Created {self.schema_base.Entity.__name__} object",
         )
@@ -63,7 +63,7 @@ class RESTRouter(RouterBase):
         @self.router.get(
             "/{id}/",
             response_model=self.schema_base.Entity,
-            responses=type(self).responses,
+            responses=self.responses,
             summary=f"Read single {self.schema_base.Entity.__name__} object",
             response_description=f"Returned {self.schema_base.Entity.__name__} object",
         )
@@ -81,7 +81,7 @@ class RESTRouter(RouterBase):
         @self.router.put(
             "/{id}/",
             response_model=self.schema_base.Entity,
-            responses=type(self).responses,
+            responses=self.responses,
             summary=f"Update single {self.schema_base.Entity.__name__} object",
             response_description=f"Updated {self.schema_base.Entity.__name__} object",
         )
@@ -107,7 +107,7 @@ class RESTRouter(RouterBase):
             @self.router.delete(
                 "/{id}/",
                 response_model={},
-                responses=type(self).responses,
+                responses=self.responses,
                 summary=f"Delete single {self.schema_base.Entity.__name__} object",
                 response_description=f"Empty JSON object if successfully deleted",
             )

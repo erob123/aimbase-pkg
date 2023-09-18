@@ -22,6 +22,8 @@ class AimbaseSettings(CoreSettings):
     minio_region: str = ""
     minio_secure: bool = True
 
+    openai_api_key: str = ""
+
     # validator to remove http:// or https:// from the minio_undpoint_url
     @validator("minio_endpoint_url", pre=True, always=True)
     def remove_http_or_https(cls, v: str) -> str:

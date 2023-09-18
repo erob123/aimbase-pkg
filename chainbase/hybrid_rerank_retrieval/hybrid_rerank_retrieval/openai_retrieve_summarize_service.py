@@ -3,6 +3,7 @@ from langchain import OpenAI
 from langchain.chains import RetrievalQA
 from langchain.llms.base import BaseLLM
 from .retrieval_service import RetrievalService
+from aimbase.core import config as aimbase_config
 
 
 class OpenAIRetrieveSummarizeService(RetrievalService):
@@ -14,22 +15,16 @@ class OpenAIRetrieveSummarizeService(RetrievalService):
     environment variable ``OPENAI_API_KEY`` set with your API key.
     """
 
-
     llm: BaseLLM | None = None
 
     def __init__(self, **kwargs: Any):
-        """Initialize the llm and import dynamic dependencies."""
+        """Initialize the pydantic object and llm."""
         super().__init__(**kwargs)
-        try:
-            import openai
 
-        except ImportError as exc:
-            raise ImportError(
-                "Could not import openai python package. "
-                "Please install it with `pip install openai`."
-            ) from exc
-
-        self.llm = OpenAI(temperature=0.8)
+        self.llm = OpenAI(
+            temperature=0.8,
+            openai_api_key=aimbase_config.get_aimbase_settings().openai_api_key,
+        )
 
     def _get_documents(self, query=None, retriever=None):
         # TODO: address FAISS chunking and add metadata

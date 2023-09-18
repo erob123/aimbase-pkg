@@ -42,7 +42,7 @@ class QueryRetrievalRouterBase(RouterBase):
             return self._render_result_as_html(results)
 
     # Function to render the result dictionary as HTML
-    def _render_result_as_html(result):
+    def _render_result_as_html(self, result):
         # Create a Jinja2 environment and load the template
 
         env = Environment(

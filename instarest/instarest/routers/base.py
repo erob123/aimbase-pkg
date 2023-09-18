@@ -26,7 +26,7 @@ class RouterBase(BaseModel, ABC):
     class ErrorMessage(BaseModel):
         detail: str = ""
 
-    responses = {
+    responses: dict = {
         "400": {"model": ErrorMessage, "description": "Bad or Improper Request"},
         "422": {"model": ErrorMessage, "description": "Unprocessable Entity"},
     }

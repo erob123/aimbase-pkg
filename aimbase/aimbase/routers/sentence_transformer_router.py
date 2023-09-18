@@ -45,7 +45,7 @@ class SentenceTransformersRouter(RESTRouter):
         @self.router.post(
             "/encode",
             response_model=Embeddings,
-            responses=type(self).responses,
+            responses=self.responses,
             summary=f"Calculate embeddings for sentences or documents",
             response_description=f"Calculated embeddings",
         )

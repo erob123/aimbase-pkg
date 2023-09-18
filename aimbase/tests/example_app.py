@@ -9,7 +9,7 @@ os.environ["ENVIRONMENT"] = "local"
 os.environ["ENV_VAR_FOLDER"] = os.path.join(
     os.path.abspath(os.path.dirname(__file__)), "env_vars"
 )
-os.environ["SECRETS"] = "false"
+os.environ["SECRETS"] = "False"
 ## ************ ENV VAR INIT BEFORE IMPORTS ************ ##
 
 from aimbase.crud.base import CRUDBaseAIModel

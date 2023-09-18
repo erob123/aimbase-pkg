@@ -28,10 +28,10 @@ class RetrievalService(BaseModel):
     s3: Minio | None = None
 
     # internal only
-    retriever_lock: Lock = Lock() # :meta private:
+    _retriever_lock: Lock = Lock() # :meta private:
 
     @validator("sentence_inference_service", pre=True, always=True)
-    def model_must_be_initialized(
+    def sentence_service_must_be_initialized(
         cls, v: SentenceTransformerInferenceService
     ) -> SentenceTransformerInferenceService:
         if not v.initialized:
@@ -41,7 +41,7 @@ class RetrievalService(BaseModel):
         return v
 
     @validator("cross_encoder_inference_service", pre=True, always=True)
-    def model_must_be_initialized(
+    def cross_encoder_service_must_be_initialized(
         cls, v: CrossEncoderInferenceService
     ) -> CrossEncoderInferenceService:
         if not v.initialized:
@@ -59,6 +59,9 @@ class RetrievalService(BaseModel):
 
         retriever = self._build_retriever(db)
 
+        if retriever is None:
+            return {"input": query, "result": "No documents in database"}
+
         results = self._get_documents(
             query=query,
             retriever=retriever,
@@ -67,7 +70,7 @@ class RetrievalService(BaseModel):
         return results
 
     def _build_retriever(self, db: Session):
-        with self.retriever_lock: # lock to ensure only one thread at a time can access this method
+        with self._retriever_lock: # lock to ensure only one thread at a time can access this method
             local_embeddings = STISEmbeddings(
                 sentence_inference_service=self.sentence_inference_service
             )
@@ -93,8 +96,12 @@ class RetrievalService(BaseModel):
 
                 documents.append(document)
 
+            if len(documents) == 0:
+                return None
+
             # TODO: add in capability to save and load FAISS index from minio
             # adjust the FAISS index in a different area using endpoint on doc save
+            # TODO: build poetry groups & docs to use gpu or cpu version of faiss
             document_retriever = FAISS.from_documents(
                 documents, local_embeddings
             ).as_retriever()
